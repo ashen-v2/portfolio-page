@@ -210,11 +210,6 @@ export default function App() {
               <a href={`mailto:${profile.email}`}>{profile.email}</a>
             </p>
             <p>
-              <strong>PHONE</strong>
-              <br />
-              <a href={`tel:${profile.phone.replace(/\s+/g, "")}`}>{profile.phone}</a>
-            </p>
-            <p>
               <strong>LINKEDIN</strong>
               <br />
               <a href={profile.linkedin} target="_blank" rel="noreferrer">
