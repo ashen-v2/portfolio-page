@@ -1,9 +1,9 @@
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { BootScreen } from "./components/BootScreen";
 import { HudNav } from "./components/HudNav";
 import { PixelWindow } from "./components/PixelWindow";
 import { QuestCard } from "./components/QuestCard";
-import { SkillBar } from "./components/SkillBar";
+import { SkillTile } from "./components/SkillBar";
 import { CloudSprite, PixelAvatar, ServerSprite, StarSprite } from "./components/Sprites";
 import {
   certifications,
@@ -12,16 +12,41 @@ import {
   profile,
   quests,
   skillGroups,
-  tags,
 } from "./data/content";
 
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+const PORTRAIT_CLICKS = 5;
+
 export default function App() {
   const [booting, setBooting] = useState(() => !prefersReducedMotion());
+  const [portraitOpen, setPortraitOpen] = useState(false);
+  const portraitClicks = useRef(0);
   const finishBoot = useCallback(() => setBooting(false), []);
+  const closePortrait = useCallback(() => {
+    portraitClicks.current = 0;
+    setPortraitOpen(false);
+  }, []);
+
+  useEffect(() => {
+    if (!portraitOpen) return;
+    function onKey(event: KeyboardEvent) {
+      if (event.key === "Escape") closePortrait();
+    }
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [portraitOpen, closePortrait]);
+
+  function tapPortrait() {
+    if (portraitOpen) return;
+    portraitClicks.current += 1;
+    if (portraitClicks.current >= PORTRAIT_CLICKS) {
+      portraitClicks.current = 0;
+      setPortraitOpen(true);
+    }
+  }
 
   return (
     <div className="app">
@@ -36,11 +61,18 @@ export default function App() {
       <main id="main" className="layout">
         <PixelWindow
           id="start"
-          title="PLAYER SELECT — DEVOPS INTERN"
+          title="PLAYER SELECT — ENTHUSIAST"
           icon={<CloudSprite size={20} />}
         >
           <div className="hero-grid">
-            <PixelAvatar />
+            <button
+              type="button"
+              className="avatar-btn"
+              onClick={tapPortrait}
+              aria-label="Pixel portrait of Ashen"
+            >
+              <PixelAvatar decorative />
+            </button>
             <div className="hero-copy">
               <h1>{profile.name}</h1>
               <p className="hero-role">
@@ -71,16 +103,15 @@ export default function App() {
         </PixelWindow>
 
         <div className="split">
-          <PixelWindow id="about" title="ABOUT.TXT" icon={<ServerSprite size={20} />}>
-            <p>{profile.summary}</p>
-            <p className="muted">
-              Seeking a DevOps Trainee role to grow into cloud automation and platform engineering.
-            </p>
-            <div className="chip-row">
-              {tags.cloud.concat(tags.extra).map((tag) => (
-                <span className="chip" key={tag}>
-                  {tag}
-                </span>
+          <PixelWindow id="education" title="EDUCATION" icon={<ServerSprite size={20} />}>
+            <div className="log-list">
+              {education.map((item) => (
+                <article className="log-item" key={item.title}>
+                  <h3>{item.title}</h3>
+                  {item.note ? <p className="badge mint">{item.note}</p> : null}
+                  <p>{item.org}</p>
+                  <p className="when">{item.when}</p>
+                </article>
               ))}
             </div>
           </PixelWindow>
@@ -106,14 +137,16 @@ export default function App() {
             {skillGroups.map((group) => (
               <div className="skill-group" key={group.id}>
                 <h3>{group.title}</h3>
-                {group.skills.map((skill) => (
-                  <SkillBar
-                    key={skill.name}
-                    name={skill.name}
-                    level={skill.level}
-                    learning={group.id === "learn"}
-                  />
-                ))}
+                <div className="skill-tiles">
+                  {group.skills.map((skill) => (
+                    <SkillTile
+                      key={skill.name}
+                      name={skill.name}
+                      icon={skill.icon}
+                      learning={group.id === "learn"}
+                    />
+                  ))}
+                </div>
               </div>
             ))}
           </div>
@@ -147,16 +180,22 @@ export default function App() {
             </div>
           </PixelWindow>
 
-          <PixelWindow title="EDUCATION">
+          <PixelWindow title="SAVE DATA">
             <div className="log-list">
-              {education.map((item) => (
-                <article className="log-item" key={item.title}>
-                  <h3>{item.title}</h3>
-                  {item.note ? <p className="badge mint">{item.note}</p> : null}
-                  <p>{item.org}</p>
-                  <p className="when">{item.when}</p>
-                </article>
-              ))}
+              <article className="log-item">
+                <h3>CLASS</h3>
+                <p>
+                  {profile.className} · {profile.role}
+                </p>
+              </article>
+              <article className="log-item">
+                <h3>LOCATION</h3>
+                <p>{profile.location}</p>
+              </article>
+              <article className="log-item">
+                <h3>GUILD</h3>
+                <p>{profile.community}</p>
+              </article>
             </div>
           </PixelWindow>
         </div>
@@ -199,7 +238,46 @@ export default function App() {
         </PixelWindow>
       </main>
 
-      <p className="pixel-footer">© 2026 {profile.name} · PIXEL UI ART HUD · STATIC BUILD</p>
+      <p className="pixel-footer">© 2026 {profile.name} · JRPG // RETROFUTURE HUD · STATIC BUILD</p>
+      <p className="pixel-footer egg-hint">The portrait remembers a touch. Five times, and the veil lifts.</p>
+      {portraitOpen ? (
+        <div className="portrait-overlay" onClick={closePortrait}>
+          <div
+            className="pixel-window portrait-dialog"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="portrait-title"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <header className="pixel-titlebar">
+              <span className="pixel-titlebar__icon" aria-hidden>
+                <StarSprite size={20} />
+              </span>
+              <h2 id="portrait-title" className="pixel-titlebar__title">
+                TRUE FORM
+              </h2>
+              <span className="pixel-titlebar__controls" aria-hidden>
+                <i className="ctrl close" />
+              </span>
+            </header>
+            <div className="pixel-window__body">
+              <img
+                className="portrait-photo"
+                src="/ashen-portrait.jpg?v=2"
+                alt="A comic JRPG prince in futuristic mercenary armor striking a silly pose. Replace public/ashen-portrait.jpg with a photo."
+              />
+              <p className="portrait-note">
+                Secret portrait. Swap <code>public/ashen-portrait.jpg</code> for a photo.
+              </p>
+              <div className="hero-actions">
+                <button type="button" className="btn" onClick={closePortrait}>
+                  CLOSE
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }

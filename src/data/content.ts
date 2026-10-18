@@ -1,7 +1,7 @@
 export const profile = {
   name: "Ashen Viduranga",
   handle: "ASHEN OS v1.0",
-  role: "DevOps Intern",
+  role: "Cloud / DevOps Enthusiast",
   className: "CLOUD OPS",
   location: "Seeduwa, Sri Lanka",
   phone: "+94 71 616 2668",
@@ -10,10 +10,7 @@ export const profile = {
   github: "https://github.com/ashen-v2",
   community: "AWS Builder Community",
   cvFile: "/Ashen_Viduranga_DevOps_Intern.pdf",
-  tagline:
-    "AWS Certified Cloud Practitioner and first-class Computer Science graduate seeking a DevOps Trainee role.",
-  summary:
-    "Hands-on AWS from the AWS re/Start program and self-directed projects. Built a GitHub Actions CI/CD pipeline — tests, Docker builds, OIDC-authenticated deploys — for a multi-container app on a live EC2 instance behind Nginx. Comfortable with Linux, Git, Python and Bash, plus core cloud networking and security. Actively building Infrastructure-as-Code skills (Terraform, Kubernetes).",
+  tagline: "Cloud systems, containers, and automation.",
 };
 
 export const skillGroups = [
@@ -21,57 +18,52 @@ export const skillGroups = [
     id: "cloud",
     title: "Cloud & DevOps",
     skills: [
-      { name: "AWS (EC2, S3, VPC, IAM, SSM)", level: 85 },
-      { name: "Docker", level: 80 },
-      { name: "GitHub Actions CI/CD", level: 82 },
-      { name: "Nginx", level: 72 },
-      { name: "Linux", level: 78 },
+      { name: "AWS (EC2, S3, VPC, IAM, SSM)", icon: "cloud" },
+      { name: "Docker", icon: "crate" },
+      { name: "GitHub Actions CI/CD", icon: "pipeline" },
+      { name: "Nginx", icon: "proxy" },
+      { name: "Linux", icon: "terminal" },
     ],
   },
   {
     id: "script",
     title: "Scripting & Automation",
     skills: [
-      { name: "Python", level: 82 },
-      { name: "Bash", level: 74 },
-      { name: "SQL / PL/SQL", level: 68 },
-      { name: "Java", level: 55 },
+      { name: "Python", icon: "script" },
+      { name: "Bash", icon: "shell" },
+      { name: "SQL / PL/SQL", icon: "database" },
+      { name: "Java", icon: "cup" },
     ],
   },
   {
     id: "net",
     title: "Networking & Security",
     skills: [
-      { name: "VPC, subnets, SGs, NACLs", level: 78 },
-      { name: "Load balancers / TCP/IP", level: 72 },
-      { name: "Least-privilege IAM", level: 80 },
-      { name: "JWT auth", level: 65 },
+      { name: "VPC, subnets, SGs, NACLs", icon: "network" },
+      { name: "Load balancers / TCP/IP", icon: "scale" },
+      { name: "Least-privilege IAM", icon: "lock" },
+      { name: "JWT auth", icon: "key" },
     ],
   },
   {
     id: "dev",
     title: "Development",
     skills: [
-      { name: "FastAPI + REST", level: 76 },
-      { name: "PostgreSQL + Alembic", level: 70 },
-      { name: "pytest", level: 72 },
-      { name: "Vue 3", level: 64 },
+      { name: "FastAPI + REST", icon: "api" },
+      { name: "PostgreSQL + Alembic", icon: "database" },
+      { name: "pytest", icon: "test" },
+      { name: "Vue 3", icon: "gem" },
     ],
   },
   {
     id: "learn",
     title: "Currently Learning",
     skills: [
-      { name: "Terraform", level: 38 },
-      { name: "Kubernetes", level: 32 },
+      { name: "Terraform", icon: "stack" },
+      { name: "Kubernetes", icon: "helm" },
     ],
   },
 ];
-
-export const tags = {
-  cloud: ["AWS", "EC2", "S3", "VPC", "IAM", "SSM", "Docker", "GitHub Actions", "Nginx", "Linux"],
-  extra: ["Git", "GitHub", "REST APIs"],
-};
 
 export type QuestStatus = "LIVE" | "DESIGN" | "TOOL";
 
@@ -166,7 +158,7 @@ export const education = [
 
 export const navItems = [
   { href: "#start", label: "START" },
-  { href: "#about", label: "ABOUT" },
+  { href: "#education", label: "EDU" },
   { href: "#skills", label: "SKILLS" },
   { href: "#quests", label: "QUESTS" },
   { href: "#log", label: "LOG" },
