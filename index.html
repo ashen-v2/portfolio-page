@@ -14,7 +14,7 @@
       content="AWS Certified Cloud Practitioner. First-class CS graduate. CI/CD, Docker, and live AWS EC2 deployments."
     />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#0b1020" />
+    <meta name="theme-color" content="#100818" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -22,6 +22,13 @@
       rel="stylesheet"
     />
     <title>Ashen Viduranga — DevOps Intern</title>
+    <script>
+      try {
+        if (localStorage.getItem("ashen-theme") === "light") {
+          document.documentElement.dataset.theme = "light";
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
