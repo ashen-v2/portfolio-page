@@ -4,7 +4,7 @@ export const profile = {
   role: "Cloud / DevOps Enthusiast",
   className: "CLOUD OPS",
   location: "Seeduwa, Sri Lanka",
-  phone: "+94 71 616 2668",
+  // phone: "+94 71 616 2668",
   email: "ashen240@gmail.com",
   linkedin: "https://linkedin.com/in/ashen-viduranga",
   github: "https://github.com/ashen-v2",
