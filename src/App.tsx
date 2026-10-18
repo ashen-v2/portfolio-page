@@ -14,6 +14,8 @@ import {
   skillGroups,
 } from "./data/content";
 
+const portraitFile = `${import.meta.env.BASE_URL}ashen-portrait.jpg?v=2`;
+
 function prefersReducedMotion() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -263,7 +265,7 @@ export default function App() {
             <div className="pixel-window__body">
               <img
                 className="portrait-photo"
-                src="/ashen-portrait.jpg?v=2"
+                src={portraitFile}
                 alt="A comic JRPG prince in futuristic mercenary armor striking a silly pose. Replace public/ashen-portrait.jpg with a photo."
               />
               <p className="portrait-note">

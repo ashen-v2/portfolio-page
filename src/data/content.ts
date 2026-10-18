@@ -9,7 +9,7 @@ export const profile = {
   linkedin: "https://linkedin.com/in/ashen-viduranga",
   github: "https://github.com/ashen-v2",
   community: "AWS Builder Community",
-  cvFile: "/Ashen_Viduranga_DevOps_Intern.pdf",
+  cvFile: `${import.meta.env.BASE_URL}Ashen_Viduranga_DevOps_Intern.pdf`,
   tagline: "Cloud systems, containers, and automation.",
 };
 
