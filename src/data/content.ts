@@ -48,8 +48,8 @@ export type SiteContent = {
 export const navItems = [
   { href: "#start", label: "START" },
   { href: "#education", label: "JOURNEY" },
-  { href: "#skills", label: "BAG" },
   { href: "#quests", label: "QUESTS" },
+  { href: "#skills", label: "BAG" },
   { href: "#log", label: "NOTES" },
   { href: "#contact", label: "MAIL" },
 ];

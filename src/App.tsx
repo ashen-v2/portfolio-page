@@ -5,7 +5,7 @@ import { PixelWindow } from "./components/PixelWindow";
 import { QuestArticle } from "./components/QuestArticle";
 import { QuestCard } from "./components/QuestCard";
 import { SkillTile } from "./components/SkillBar";
-import { CloudSprite, PixelAvatar, ServerSprite, StarSprite } from "./components/Sprites";
+import { CloudSprite, PixelAvatar, RouteScene, ServerSprite, StarSprite } from "./components/Sprites";
 import { linkLabel, loadContent, type SiteContent } from "./data/content";
 
 const portraitFile = `${import.meta.env.BASE_URL}ashen-portrait.jpg?v=2`;
@@ -149,26 +149,6 @@ function Portfolio({
         </div>
       </div>
 
-      <PixelWindow id="skills" title="BAG" plain="Tools and technologies">
-        <div className="skill-groups">
-          {skillGroups.map((group) => (
-            <div className={`skill-group pocket-${group.id}`} key={group.id}>
-              <h3>{group.title}</h3>
-              <div className="skill-tiles">
-                {group.skills.map((skill) => (
-                  <SkillTile
-                    key={skill.name}
-                    name={skill.name}
-                    icon={skill.icon}
-                    learning={group.id === "learn"}
-                  />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </PixelWindow>
-
       <PixelWindow id="quests" title="QUESTS" plain="Projects">
         {articleId ? (
           openQuest?.article ? (
@@ -211,6 +191,26 @@ function Portfolio({
             ) : null}
           </>
         )}
+      </PixelWindow>
+
+      <PixelWindow id="skills" title="BAG" plain="Tools and technologies">
+        <div className="skill-groups">
+          {skillGroups.map((group) => (
+            <div className={`skill-group pocket-${group.id}`} key={group.id}>
+              <h3>{group.title}</h3>
+              <div className="skill-tiles">
+                {group.skills.map((skill) => (
+                  <SkillTile
+                    key={skill.name}
+                    name={skill.name}
+                    icon={skill.icon}
+                    learning={group.id === "learn"}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       </PixelWindow>
 
       <div className="split" id="log">
@@ -339,12 +339,8 @@ export default function App() {
       <p className="pixel-footer">
         © 2026 {content?.profile.name ?? "Ashen Viduranga"} · Hoenn route
       </p>
-      <p className="pixel-footer egg-hint">Tap the portrait five times.</p>
-      <div className="ground" aria-hidden>
-        <span className="ground-tuft" />
-        <span className="ground-tuft ground-tuft-b" />
-        <span className="ground-tuft ground-tuft-c" />
-      </div>
+      <p className="pixel-footer egg-hint">The portrait is keeping a secret.</p>
+      <RouteScene />
       {portraitOpen ? (
         <div className="portrait-overlay" onClick={closePortrait}>
           <div
@@ -358,8 +354,9 @@ export default function App() {
               <span className="pixel-titlebar__icon" aria-hidden>
                 <StarSprite size={20} />
               </span>
-              <h2 id="portrait-title" className="pixel-titlebar__title">
-                PORTRAIT
+              <h2 id="portrait-title" className="pixel-titlebar__title" aria-label="Familiar Cat">
+                <span className="title-kicker">FAMILIAR</span>
+                <span className="title-plain">Cat</span>
               </h2>
               <span className="pixel-titlebar__controls" aria-hidden>
                 <i className="ctrl close" />
@@ -369,11 +366,9 @@ export default function App() {
               <img
                 className="portrait-photo"
                 src={portraitFile}
-                alt="A comic JRPG prince in futuristic mercenary armor striking a silly pose. Replace public/ashen-portrait.jpg with a photo."
+                alt="Ashen's cat."
               />
-              <p className="portrait-note">
-                Secret portrait. Swap <code>public/ashen-portrait.jpg</code> for a photo.
-              </p>
+              <p className="portrait-note">The secret in the portrait is a cat.</p>
               <div className="hero-actions">
                 <button type="button" className="btn" onClick={closePortrait}>
                   Close
