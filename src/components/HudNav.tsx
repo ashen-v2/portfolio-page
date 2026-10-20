@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { navItems, profile } from "../data/content";
+import { navItems, type Profile } from "../data/content";
 import { CloudSprite } from "./Sprites";
 
 type Theme = "dark" | "light";
@@ -13,7 +13,7 @@ function applyTheme(theme: Theme) {
   localStorage.setItem("ashen-theme", theme);
 }
 
-export function HudNav() {
+export function HudNav({ profile }: { profile: Profile | null }) {
   const [theme, setTheme] = useState<Theme>(currentTheme);
 
   function toggleTheme() {
@@ -26,7 +26,7 @@ export function HudNav() {
     <header className="hud-nav">
       <a className="hud-brand" href="#start">
         <CloudSprite size={28} />
-        {profile.handle}
+        {profile?.handle ?? "ASHEN OS"}
       </a>
       <nav className="hud-links" aria-label="Section">
         {navItems.map((item) => (
@@ -52,7 +52,7 @@ export function HudNav() {
         </span>
         <span className="stat-chip">
           <span className="stat-label">CLASS</span>
-          <span>{profile.className}</span>
+          <span>{profile?.className ?? "—"}</span>
         </span>
       </div>
     </header>

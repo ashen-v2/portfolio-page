@@ -47,4 +47,14 @@ aws s3 sync dist/ s3://YOUR_BUCKET_NAME --delete
 
 ## Content
 
-Edit copy in [`src/data/content.ts`](src/data/content.ts). Replace [`public/Ashen_Viduranga_DevOps_Intern.pdf`](public/Ashen_Viduranga_DevOps_Intern.pdf) to update the downloadable CV.
+Edit [`public/content.json`](public/content.json), then refresh. That file is the player-select text and tags, education, certs, skills, quests, work log, and save-data lines. A new cert is one object:
+
+```json
+{ "title": "New cert", "issuer": "Amazon Web Services", "when": "Oct 2026" }
+```
+
+A player-select tag is `{ "label": "AWS CCP", "tone": "gold" }`. Tones are `gold`, `cyan`, and `mint`. Quest bullets are an array of strings.
+
+Commit the file so GitHub Pages or Vercel rebuilds. On S3, upload the new `content.json` from `dist/` after `npm run build`, or overwrite that one object. The certs window stays the height of the education column and scrolls when the list grows.
+
+Replace [`public/Ashen_Viduranga_DevOps_Intern.pdf`](public/Ashen_Viduranga_DevOps_Intern.pdf) to update the downloadable CV. The `cvFile` field in `content.json` is the file name.

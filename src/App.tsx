@@ -5,14 +5,7 @@ import { PixelWindow } from "./components/PixelWindow";
 import { QuestCard } from "./components/QuestCard";
 import { SkillTile } from "./components/SkillBar";
 import { CloudSprite, PixelAvatar, ServerSprite, StarSprite } from "./components/Sprites";
-import {
-  certifications,
-  education,
-  experience,
-  profile,
-  quests,
-  skillGroups,
-} from "./data/content";
+import { linkLabel, loadContent, type SiteContent } from "./data/content";
 
 const portraitFile = `${import.meta.env.BASE_URL}ashen-portrait.jpg?v=2`;
 
@@ -22,14 +15,203 @@ function prefersReducedMotion() {
 
 const PORTRAIT_CLICKS = 5;
 
+function Portfolio({
+  content,
+  tapPortrait,
+}: {
+  content: SiteContent;
+  tapPortrait: () => void;
+}) {
+  const { profile, badges, education, certifications, skillGroups, quests, experience, saveData } =
+    content;
+
+  return (
+    <>
+      <PixelWindow id="start" title="PLAYER SELECT — ENTHUSIAST" icon={<CloudSprite size={20} />}>
+        <div className="hero-grid">
+          <button
+            type="button"
+            className="avatar-btn"
+            onClick={tapPortrait}
+            aria-label="Pixel portrait of Ashen"
+          >
+            <PixelAvatar decorative />
+          </button>
+          <div className="hero-copy">
+            <h1>{profile.name}</h1>
+            <p className="hero-role">
+              {profile.className} · {profile.role}
+            </p>
+            <p className="hero-meta">
+              {profile.location} · {profile.community}
+            </p>
+            <p>{profile.tagline}</p>
+            <div className="badge-row">
+              {badges.map((badge) => (
+                <span
+                  className={badge.tone === "gold" ? "badge" : `badge ${badge.tone}`}
+                  key={badge.label}
+                >
+                  {badge.label}
+                </span>
+              ))}
+            </div>
+            <div className="hero-actions">
+              <a className="btn" href={profile.cvFile} download>
+                DOWNLOAD CV
+              </a>
+              <a className="btn secondary" href={profile.github} target="_blank" rel="noreferrer">
+                GITHUB
+              </a>
+              <a className="btn ghost" href={profile.linkedin} target="_blank" rel="noreferrer">
+                LINKEDIN
+              </a>
+            </div>
+          </div>
+        </div>
+      </PixelWindow>
+
+      <div className="split split-certs">
+        <PixelWindow id="education" title="EDUCATION" icon={<ServerSprite size={20} />}>
+          <div className="log-list">
+            {education.map((item) => (
+              <article className="log-item" key={item.title}>
+                <h3>{item.title}</h3>
+                {item.note ? <p className="badge mint">{item.note}</p> : null}
+                <p>{item.org}</p>
+                <p className="when">{item.when}</p>
+              </article>
+            ))}
+          </div>
+        </PixelWindow>
+
+        <div className="certs-slot">
+          <PixelWindow className="certs-window" title="CERTS & TRAINING" icon={<StarSprite size={20} />}>
+            <div className="cert-list">
+              {certifications.map((cert) => (
+                <article className="cert" key={cert.title}>
+                  <StarSprite size={22} />
+                  <div>
+                    <h3>{cert.title}</h3>
+                    <p className="muted">{cert.issuer}</p>
+                    <p className="when">{cert.when}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </PixelWindow>
+        </div>
+      </div>
+
+      <PixelWindow id="skills" title="SKILL XP — INVENTORY">
+        <div className="skill-groups">
+          {skillGroups.map((group) => (
+            <div className="skill-group" key={group.id}>
+              <h3>{group.title}</h3>
+              <div className="skill-tiles">
+                {group.skills.map((skill) => (
+                  <SkillTile
+                    key={skill.name}
+                    name={skill.name}
+                    icon={skill.icon}
+                    learning={group.id === "learn"}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </PixelWindow>
+
+      <PixelWindow id="quests" title="QUEST LOG — PROJECTS">
+        <div className="quest-grid">
+          {quests.map((quest) => (
+            <QuestCard key={quest.id} {...quest} />
+          ))}
+        </div>
+      </PixelWindow>
+
+      <div className="split" id="log">
+        <PixelWindow title="WORK LOG">
+          <div className="log-list">
+            {experience.map((job) => (
+              <article className="log-item" key={job.title}>
+                <h3>{job.title}</h3>
+                <p>
+                  {job.org} · {job.where}
+                </p>
+                <p className="when">{job.when}</p>
+                <ul>
+                  {job.points.map((point) => (
+                    <li key={point}>{point}</li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </PixelWindow>
+
+        <PixelWindow title="SAVE DATA">
+          <div className="log-list">
+            {saveData.map((entry) => (
+              <article className="log-item" key={entry.label}>
+                <h3>{entry.label}</h3>
+                <p>{entry.value}</p>
+              </article>
+            ))}
+          </div>
+        </PixelWindow>
+      </div>
+
+      <PixelWindow id="contact" title="CONTACT — SEND PACKET">
+        <div className="contact-grid">
+          <p>
+            <strong>EMAIL</strong>
+            <br />
+            <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          </p>
+          <p>
+            <strong>LINKEDIN</strong>
+            <br />
+            <a href={profile.linkedin} target="_blank" rel="noreferrer">
+              {linkLabel(profile.linkedin)}
+            </a>
+          </p>
+          <p>
+            <strong>GITHUB</strong>
+            <br />
+            <a href={profile.github} target="_blank" rel="noreferrer">
+              {linkLabel(profile.github)}
+            </a>
+          </p>
+        </div>
+        <div className="hero-actions">
+          <a className="btn" href={`mailto:${profile.email}`}>
+            SEND MAIL
+          </a>
+          <a className="btn secondary" href={profile.cvFile} download>
+            CV PDF
+          </a>
+        </div>
+      </PixelWindow>
+    </>
+  );
+}
+
 export default function App() {
   const [booting, setBooting] = useState(() => !prefersReducedMotion());
   const [portraitOpen, setPortraitOpen] = useState(false);
+  const [content, setContent] = useState<SiteContent | null>(null);
+  const [contentError, setContentError] = useState("");
   const portraitClicks = useRef(0);
   const finishBoot = useCallback(() => setBooting(false), []);
   const closePortrait = useCallback(() => {
     portraitClicks.current = 0;
     setPortraitOpen(false);
+  }, []);
+
+  useEffect(() => {
+    loadContent().then(setContent).catch(() => setContentError("Could not read content.json"));
   }, []);
 
   useEffect(() => {
@@ -58,184 +240,20 @@ export default function App() {
       {booting ? <BootScreen onDone={finishBoot} /> : null}
       <div className="scanlines" aria-hidden />
       <div className="vignette" aria-hidden />
-      <HudNav />
+      <HudNav profile={content?.profile ?? null} />
 
       <main id="main" className="layout">
-        <PixelWindow
-          id="start"
-          title="PLAYER SELECT — ENTHUSIAST"
-          icon={<CloudSprite size={20} />}
-        >
-          <div className="hero-grid">
-            <button
-              type="button"
-              className="avatar-btn"
-              onClick={tapPortrait}
-              aria-label="Pixel portrait of Ashen"
-            >
-              <PixelAvatar decorative />
-            </button>
-            <div className="hero-copy">
-              <h1>{profile.name}</h1>
-              <p className="hero-role">
-                {profile.className} · {profile.role}
-              </p>
-              <p className="hero-meta">
-                {profile.location} · {profile.community}
-              </p>
-              <p>{profile.tagline}</p>
-              <div className="badge-row">
-                <span className="badge">AWS CCP</span>
-                <span className="badge cyan">FIRST CLASS</span>
-                <span className="badge mint">RE/START</span>
-              </div>
-              <div className="hero-actions">
-                <a className="btn" href={profile.cvFile} download>
-                  DOWNLOAD CV
-                </a>
-                <a className="btn secondary" href={profile.github} target="_blank" rel="noreferrer">
-                  GITHUB
-                </a>
-                <a className="btn ghost" href={profile.linkedin} target="_blank" rel="noreferrer">
-                  LINKEDIN
-                </a>
-              </div>
-            </div>
-          </div>
-        </PixelWindow>
-
-        <div className="split">
-          <PixelWindow id="education" title="EDUCATION" icon={<ServerSprite size={20} />}>
-            <div className="log-list">
-              {education.map((item) => (
-                <article className="log-item" key={item.title}>
-                  <h3>{item.title}</h3>
-                  {item.note ? <p className="badge mint">{item.note}</p> : null}
-                  <p>{item.org}</p>
-                  <p className="when">{item.when}</p>
-                </article>
-              ))}
-            </div>
+        {contentError ? (
+          <PixelWindow title="SAVE ERROR">
+            <p>{contentError}</p>
           </PixelWindow>
-
-          <PixelWindow title="CERTS & TRAINING" icon={<StarSprite size={20} />}>
-            <div className="cert-list">
-              {certifications.map((cert) => (
-                <article className="cert" key={cert.title}>
-                  <StarSprite size={22} />
-                  <div>
-                    <h3>{cert.title}</h3>
-                    <p className="muted">{cert.issuer}</p>
-                    <p className="when">{cert.when}</p>
-                  </div>
-                </article>
-              ))}
-            </div>
-          </PixelWindow>
-        </div>
-
-        <PixelWindow id="skills" title="SKILL XP — INVENTORY">
-          <div className="skill-groups">
-            {skillGroups.map((group) => (
-              <div className="skill-group" key={group.id}>
-                <h3>{group.title}</h3>
-                <div className="skill-tiles">
-                  {group.skills.map((skill) => (
-                    <SkillTile
-                      key={skill.name}
-                      name={skill.name}
-                      icon={skill.icon}
-                      learning={group.id === "learn"}
-                    />
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </PixelWindow>
-
-        <PixelWindow id="quests" title="QUEST LOG — PROJECTS">
-          <div className="quest-grid">
-            {quests.map((quest) => (
-              <QuestCard key={quest.id} {...quest} />
-            ))}
-          </div>
-        </PixelWindow>
-
-        <div className="split" id="log">
-          <PixelWindow title="WORK LOG">
-            <div className="log-list">
-              {experience.map((job) => (
-                <article className="log-item" key={job.title}>
-                  <h3>{job.title}</h3>
-                  <p>
-                    {job.org} · {job.where}
-                  </p>
-                  <p className="when">{job.when}</p>
-                  <ul>
-                    {job.points.map((point) => (
-                      <li key={point}>{point}</li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-          </PixelWindow>
-
-          <PixelWindow title="SAVE DATA">
-            <div className="log-list">
-              <article className="log-item">
-                <h3>CLASS</h3>
-                <p>
-                  {profile.className} · {profile.role}
-                </p>
-              </article>
-              <article className="log-item">
-                <h3>LOCATION</h3>
-                <p>{profile.location}</p>
-              </article>
-              <article className="log-item">
-                <h3>GUILD</h3>
-                <p>{profile.community}</p>
-              </article>
-            </div>
-          </PixelWindow>
-        </div>
-
-        <PixelWindow id="contact" title="CONTACT — SEND PACKET">
-          <div className="contact-grid">
-            <p>
-              <strong>EMAIL</strong>
-              <br />
-              <a href={`mailto:${profile.email}`}>{profile.email}</a>
-            </p>
-            <p>
-              <strong>LINKEDIN</strong>
-              <br />
-              <a href={profile.linkedin} target="_blank" rel="noreferrer">
-                linkedin.com/in/ashen-viduranga
-              </a>
-            </p>
-            <p>
-              <strong>GITHUB</strong>
-              <br />
-              <a href={profile.github} target="_blank" rel="noreferrer">
-                github.com/ashen-v2
-              </a>
-            </p>
-          </div>
-          <div className="hero-actions">
-            <a className="btn" href={`mailto:${profile.email}`}>
-              SEND MAIL
-            </a>
-            <a className="btn secondary" href={profile.cvFile} download>
-              CV PDF
-            </a>
-          </div>
-        </PixelWindow>
+        ) : null}
+        {content ? <Portfolio content={content} tapPortrait={tapPortrait} /> : null}
       </main>
 
-      <p className="pixel-footer">© 2026 {profile.name} · JRPG // RETROFUTURE HUD · STATIC BUILD</p>
+      <p className="pixel-footer">
+        © 2026 {content?.profile.name ?? "Ashen Viduranga"} · JRPG // RETROFUTURE HUD · STATIC BUILD
+      </p>
       <p className="pixel-footer egg-hint">The portrait remembers a touch. Five times, and the veil lifts.</p>
       {portraitOpen ? (
         <div className="portrait-overlay" onClick={closePortrait}>

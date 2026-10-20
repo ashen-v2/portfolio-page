@@ -474,6 +474,25 @@ a:hover {
   gap: 24px;
 }
 
+.certs-slot {
+  position: relative;
+  min-height: 0;
+}
+
+.certs-slot > .pixel-window {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.certs-slot .pixel-window__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
 .muted {
   color: var(--muted);
 }
@@ -809,6 +828,11 @@ a:hover {
   .quest-grid,
   .contact-grid {
     grid-template-columns: 1fr;
+  }
+
+  .certs-slot > .pixel-window {
+    position: static;
+    max-height: 420px;
   }
 
   .hud-stats {
