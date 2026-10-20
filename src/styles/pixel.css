@@ -1140,38 +1140,104 @@ a:hover {
   }
 }
 
-@media (max-width: 900px) {
+@media (min-width: 901px) and (max-width: 1700px) {
+  .layout {
+    width: min(1100px, calc(100% - 300px));
+    z-index: 30;
+  }
+
+  .pixel-footer {
+    z-index: 30;
+  }
+
   .app {
-    padding-bottom: 0;
+    padding-bottom: calc(1.2in + 18px);
   }
 
   .ground {
-    position: relative;
-    bottom: auto;
-    z-index: auto;
-    height: calc(1.25in + 22px);
-    margin-top: 8px;
+    height: calc(1.2in + 18px);
+    overflow: hidden;
+  }
+
+  .scene-left {
+    left: 12px;
+    gap: 0;
+  }
+
+  .scene-right {
+    right: 12px;
+    gap: 0;
+  }
+
+  .scene-cast .scene-gym {
+    height: 1.2in;
+    max-height: 1.2in;
+  }
+
+  .scene-cast .scene-tree {
+    height: 0.72in;
+    max-height: 0.72in;
+    margin-left: -16px;
+  }
+
+  .scene-cast .scene-walker {
+    height: 1in;
+    max-height: 1in;
+  }
+
+  .scene-cast .scene-pal {
+    height: 0.5in;
+    max-height: 0.5in;
+    margin-right: -10px;
+  }
+}
+
+@media (max-width: 900px) {
+  .app {
+    padding-bottom: calc(0.9in + 18px);
+  }
+
+  .ground {
+    position: fixed;
+    bottom: 0;
+    z-index: 25;
+    height: calc(0.9in + 18px);
+    margin-top: 0;
     overflow: hidden;
   }
 
   .scene-cast .scene-gym {
-    height: 1.25in;
-    max-height: 1.25in;
-  }
-
-  .scene-cast .scene-tree {
-    height: 0.78in;
-    max-height: 0.78in;
-  }
-
-  .scene-cast .scene-walker {
     height: 0.9in;
     max-height: 0.9in;
   }
 
+  .scene-cast .scene-walker {
+    height: 0.78in;
+    max-height: 0.78in;
+  }
+
+  .scene-cast .scene-tree,
   .scene-cast .scene-pal {
-    height: 0.52in;
-    max-height: 0.52in;
+    width: 0;
+    height: 0;
+    min-width: 0;
+    min-height: 0;
+    max-height: 0;
+    overflow: hidden;
+  }
+
+  .ground.scene-settled .scene-tree {
+    width: auto;
+    height: 0.55in;
+    max-height: 0.55in;
+    overflow: visible;
+  }
+
+  .ground.scene-settled .scene-pal {
+    width: auto;
+    height: 0.38in;
+    max-height: 0.38in;
+    overflow: visible;
   }
 
   .sky {

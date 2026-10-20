@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 type SpriteProps = {
   size?: number;
@@ -136,8 +136,20 @@ function SceneSvg({
 }
 
 export function RouteScene() {
+  const [settled, setSettled] = useState(false);
+
+  useEffect(() => {
+    const hint = document.querySelector(".egg-hint");
+    if (!hint) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setSettled(entry.isIntersecting);
+    });
+    observer.observe(hint);
+    return () => observer.disconnect();
+  }, []);
+
   return (
-    <div className="ground" aria-hidden>
+    <div className={settled ? "ground scene-settled" : "ground"} aria-hidden>
       <div className="scene-cast scene-left">
         <SceneSvg className="scene-gym" viewBox="0 0 64 80">
           <rect x="0" y="19" width="24" height="61" fill="var(--panel)" />
