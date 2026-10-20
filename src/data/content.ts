@@ -45,21 +45,19 @@ export type SiteContent = {
 
 export const navItems = [
   { href: "#start", label: "START" },
-  { href: "#education", label: "EDU" },
-  { href: "#skills", label: "SKILLS" },
+  { href: "#education", label: "JOURNEY" },
+  { href: "#skills", label: "BAG" },
   { href: "#quests", label: "QUESTS" },
-  { href: "#log", label: "LOG" },
-  { href: "#contact", label: "CONTACT" },
+  { href: "#log", label: "NOTES" },
+  { href: "#contact", label: "MAIL" },
 ];
 
 export const bootLines = [
-  "ASHEN OS v1.0",
-  "> mounting /cloud",
-  "> loading IAM roles ........ OK",
-  "> docker compose up ........ OK",
-  "> nginx reverse-proxy ...... OK",
-  "> github actions OIDC ...... OK",
-  "READY. PRESS START",
+  "ROUTE 101",
+  "Ashen Viduranga",
+  "Cloud Ops",
+  "A crystal flickers on the path.",
+  "PRESS START",
 ];
 
 export function linkLabel(url: string) {

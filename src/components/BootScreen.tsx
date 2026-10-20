@@ -26,14 +26,16 @@ export function BootScreen({ onDone }: BootScreenProps) {
 
   return (
     <div className="boot" role="status" aria-live="polite">
-      {bootLines.map((line, index) => (
-        <div key={line} className={`boot-line${index < visibleCount ? " on" : ""}`}>
-          {line}
-        </div>
-      ))}
-      <button type="button" className="btn boot-skip" onClick={onDone}>
-        SKIP
-      </button>
+      <div className="boot-card">
+        {bootLines.map((line, index) => (
+          <div key={line} className={`boot-line${index < visibleCount ? " on" : ""}`}>
+            {line}
+          </div>
+        ))}
+        <button type="button" className="btn boot-skip" onClick={onDone}>
+          Skip
+        </button>
+      </div>
     </div>
   );
 }

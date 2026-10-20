@@ -27,7 +27,7 @@ function Portfolio({
 
   return (
     <>
-      <PixelWindow id="start" title="PLAYER SELECT — ENTHUSIAST" icon={<CloudSprite size={20} />}>
+      <PixelWindow id="start" title="PARTY STATUS" icon={<CloudSprite size={20} />}>
         <div className="hero-grid">
           <button
             type="button"
@@ -56,23 +56,24 @@ function Portfolio({
                 </span>
               ))}
             </div>
-            <div className="hero-actions">
-              <a className="btn" href={profile.cvFile} download>
-                DOWNLOAD CV
-              </a>
-              <a className="btn secondary" href={profile.github} target="_blank" rel="noreferrer">
-                GITHUB
-              </a>
-              <a className="btn ghost" href={profile.linkedin} target="_blank" rel="noreferrer">
-                LINKEDIN
-              </a>
-            </div>
+          </div>
+          <div className="command-list">
+            <p className="command-label">Command</p>
+            <a className="btn" href={profile.cvFile} download>
+              Download CV
+            </a>
+            <a className="btn secondary" href={profile.github} target="_blank" rel="noreferrer">
+              GitHub
+            </a>
+            <a className="btn ghost" href={profile.linkedin} target="_blank" rel="noreferrer">
+              LinkedIn
+            </a>
           </div>
         </div>
       </PixelWindow>
 
       <div className="split split-certs">
-        <PixelWindow id="education" title="EDUCATION" icon={<ServerSprite size={20} />}>
+        <PixelWindow id="education" title="JOURNEY" icon={<ServerSprite size={20} />}>
           <div className="log-list">
             {education.map((item) => (
               <article className="log-item" key={item.title}>
@@ -86,7 +87,7 @@ function Portfolio({
         </PixelWindow>
 
         <div className="certs-slot">
-          <PixelWindow className="certs-window" title="CERTS & TRAINING" icon={<StarSprite size={20} />}>
+          <PixelWindow className="certs-window" title="BADGES" icon={<StarSprite size={20} />}>
             <div className="cert-list">
               {certifications.map((cert) => (
                 <article className="cert" key={cert.title}>
@@ -103,10 +104,10 @@ function Portfolio({
         </div>
       </div>
 
-      <PixelWindow id="skills" title="SKILL XP — INVENTORY">
+      <PixelWindow id="skills" title="BAG">
         <div className="skill-groups">
           {skillGroups.map((group) => (
-            <div className="skill-group" key={group.id}>
+            <div className={`skill-group pocket-${group.id}`} key={group.id}>
               <h3>{group.title}</h3>
               <div className="skill-tiles">
                 {group.skills.map((skill) => (
@@ -123,7 +124,7 @@ function Portfolio({
         </div>
       </PixelWindow>
 
-      <PixelWindow id="quests" title="QUEST LOG — PROJECTS">
+      <PixelWindow id="quests" title="QUESTS">
         <div className="quest-grid">
           {quests.map((quest) => (
             <QuestCard key={quest.id} {...quest} />
@@ -132,7 +133,7 @@ function Portfolio({
       </PixelWindow>
 
       <div className="split" id="log">
-        <PixelWindow title="WORK LOG">
+        <PixelWindow title="FIELD NOTES">
           <div className="log-list">
             {experience.map((job) => (
               <article className="log-item" key={job.title}>
@@ -151,7 +152,7 @@ function Portfolio({
           </div>
         </PixelWindow>
 
-        <PixelWindow title="SAVE DATA">
+        <PixelWindow title="TRAINER CARD">
           <div className="log-list">
             {saveData.map((entry) => (
               <article className="log-item" key={entry.label}>
@@ -163,7 +164,7 @@ function Portfolio({
         </PixelWindow>
       </div>
 
-      <PixelWindow id="contact" title="CONTACT — SEND PACKET">
+      <PixelWindow id="contact" title="MAIL">
         <div className="contact-grid">
           <p>
             <strong>EMAIL</strong>
@@ -187,7 +188,7 @@ function Portfolio({
         </div>
         <div className="hero-actions">
           <a className="btn" href={`mailto:${profile.email}`}>
-            SEND MAIL
+            Send mail
           </a>
           <a className="btn secondary" href={profile.cvFile} download>
             CV PDF
@@ -235,16 +236,19 @@ export default function App() {
   return (
     <div className="app">
       <a className="skip-link" href="#main">
-        SKIP TO HUD
+        Skip to content
       </a>
       {booting ? <BootScreen onDone={finishBoot} /> : null}
-      <div className="scanlines" aria-hidden />
-      <div className="vignette" aria-hidden />
+      <div className="sky" aria-hidden>
+        <span className="cloud cloud-a" />
+        <span className="cloud cloud-b" />
+        <span className="cloud cloud-c" />
+      </div>
       <HudNav profile={content?.profile ?? null} />
 
       <main id="main" className="layout">
         {contentError ? (
-          <PixelWindow title="SAVE ERROR">
+          <PixelWindow title="NO SAVE">
             <p>{contentError}</p>
           </PixelWindow>
         ) : null}
@@ -252,9 +256,9 @@ export default function App() {
       </main>
 
       <p className="pixel-footer">
-        © 2026 {content?.profile.name ?? "Ashen Viduranga"} · JRPG // RETROFUTURE HUD · STATIC BUILD
+        © 2026 {content?.profile.name ?? "Ashen Viduranga"} · Hoenn route
       </p>
-      <p className="pixel-footer egg-hint">The portrait remembers a touch. Five times, and the veil lifts.</p>
+      <p className="pixel-footer egg-hint">Tap the portrait five times.</p>
       {portraitOpen ? (
         <div className="portrait-overlay" onClick={closePortrait}>
           <div
@@ -269,7 +273,7 @@ export default function App() {
                 <StarSprite size={20} />
               </span>
               <h2 id="portrait-title" className="pixel-titlebar__title">
-                TRUE FORM
+                PORTRAIT
               </h2>
               <span className="pixel-titlebar__controls" aria-hidden>
                 <i className="ctrl close" />
@@ -286,7 +290,7 @@ export default function App() {
               </p>
               <div className="hero-actions">
                 <button type="button" className="btn" onClick={closePortrait}>
-                  CLOSE
+                  Close
                 </button>
               </div>
             </div>

@@ -14,18 +14,20 @@
       content="AWS Certified Cloud Practitioner. First-class CS graduate. CI/CD, Docker, and live AWS EC2 deployments."
     />
     <meta property="og:type" content="website" />
-    <meta name="theme-color" content="#100818" />
+    <meta name="theme-color" content="#7ec8ff" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;600;700&family=Press+Start+2P&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Pixelify+Sans:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <title>Ashen Viduranga — Portfolio</title>
     <script>
       try {
-        if (localStorage.getItem("ashen-theme") === "light") {
-          document.documentElement.dataset.theme = "light";
+        if (localStorage.getItem("ashen-theme") === "dusk") {
+          document.documentElement.dataset.theme = "dusk";
+          var themeMeta = document.querySelector('meta[name="theme-color"]');
+          if (themeMeta) themeMeta.setAttribute("content", "#ffb087");
         }
       } catch (e) {}
     </script>

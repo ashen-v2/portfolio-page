@@ -99,7 +99,7 @@ export function PixelAvatar({ size = 128, decorative = false }: { size?: number;
       <rect x="13" y="11" width="2" height="2" fill="#1a120c" />
       <rect x="17" y="11" width="2" height="2" fill="#1a120c" />
       <rect x="14" y="14" width="4" height="1" fill="#5c3318" />
-      <rect x="10" y="10" width="12" height="3" fill="var(--cyan)" opacity="0.35" />
+      <rect x="11" y="9" width="10" height="2" fill="var(--gold)" />
       <rect x="12" y="24" width="8" height="2" fill="var(--gold)" />
       <rect x="4" y="23" width="4" height="3" fill="var(--cyan)" />
       <rect x="24" y="21" width="3" height="6" fill="var(--panel-2)" />
