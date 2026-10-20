@@ -43,7 +43,7 @@ export function QuestArticle({ file, onBack }: { file: string; onBack: () => voi
   }, [file]);
 
   return (
-    <div className="article-view">
+    <div className="article-view jrpg-card">
       <div className="quest-toolbar">
         <button type="button" className="btn secondary" onClick={onBack}>
           Back
