@@ -1,9 +1,20 @@
+import { useState } from "react";
 import type { SiteContent } from "../../data/content";
 import { SectionPanel } from "./SectionPanel";
 import { SideColumn } from "./SideColumn";
 import { ToolDock } from "./ToolDock";
 import { Viewport } from "./Viewport";
 import { moduleTitle, type SectionId } from "./modules";
+
+type PhoneLayout = "stage" | "stack";
+
+function readLayout(): PhoneLayout {
+  try {
+    return localStorage.getItem("console-layout") === "stack" ? "stack" : "stage";
+  } catch {
+    return "stage";
+  }
+}
 
 const base = import.meta.env.BASE_URL;
 const citySrc = `${base}console/city.png`;
@@ -39,7 +50,20 @@ export function Console({
   onOpenArticle,
   onCloseArticle,
 }: ConsoleProps) {
+  const [layout, setLayout] = useState<PhoneLayout>(readLayout);
   const articleQuest = content?.quests.find((quest) => quest.id === articleId);
+
+  function toggleLayout() {
+    setLayout((current) => {
+      const next = current === "stage" ? "stack" : "stage";
+      try {
+        localStorage.setItem("console-layout", next);
+      } catch {
+        /* keep the choice for this visit */
+      }
+      return next;
+    });
+  }
   const title =
     section === "projects" && articleId
       ? (articleQuest?.title ?? "PROJECTS").toUpperCase()
@@ -69,7 +93,11 @@ export function Console({
   }
 
   return (
-    <div className="desk">
+    <div className="desk" data-layout={layout}>
+      <button type="button" className="layout-switch" onClick={toggleLayout}>
+        {layout === "stage" ? "Phone layout" : "Console layout"}
+      </button>
+      <div className="stage-slot">
       <div className="console">
         <span className="console-stripe" aria-hidden="true" />
         <span className="screw screw-outer screw-tl" aria-hidden="true" />
@@ -93,6 +121,7 @@ export function Console({
           />
           <ToolDock section={section} enabled={Boolean(content)} onSelect={onSelect} />
         </div>
+      </div>
       </div>
     </div>
   );
