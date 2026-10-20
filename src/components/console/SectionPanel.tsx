@@ -26,8 +26,7 @@ export function SectionPanel({
   onOpenArticle,
   onCloseArticle,
 }: SectionPanelProps) {
-  const { profile, badges, education, certifications, skillGroups, quests, experience, saveData } =
-    content;
+  const { profile, education, certifications, skillGroups, quests, experience, saveData } = content;
   const orderedQuests = useMemo(() => byPriority(quests), [quests]);
 
   if (section === "projects" && articleId) {
@@ -58,13 +57,6 @@ export function SectionPanel({
           {profile.location} · {profile.community}
         </p>
         <p>{profile.tagline}</p>
-        <div className="badge-row">
-          {badges.map((badge) => (
-            <span className={`badge badge-${badge.tone}`} key={badge.label}>
-              {badge.label}
-            </span>
-          ))}
-        </div>
         <dl className="save-list">
           {saveData.map((entry) => (
             <div key={entry.label}>

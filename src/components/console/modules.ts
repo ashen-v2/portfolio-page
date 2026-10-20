@@ -1,7 +1,7 @@
 export const moduleKeys = [
   { id: "about", label: "About", title: "ABOUT" },
   { id: "education", label: "Education", title: "EDUCATION" },
-  { id: "certs", label: "Certifications", title: "CERTIFICATIONS" },
+  { id: "certs", label: "Certificates", title: "CERTIFICATES" },
   { id: "projects", label: "Projects", title: "PROJECTS" },
   { id: "skills", label: "Skills", title: "SKILLS" },
   { id: "work", label: "Work", title: "WORK" },

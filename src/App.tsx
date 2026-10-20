@@ -19,6 +19,7 @@ export default function App() {
   const [contentError, setContentError] = useState("");
   const [articleId, setArticleId] = useState(initialArticle);
   const [section, setSection] = useState<SectionId | null>(initialArticle ? "projects" : null);
+  const [scene, setScene] = useState<SectionId | null>(initialArticle ? "projects" : null);
 
   useEffect(() => {
     loadContent()
@@ -32,7 +33,10 @@ export default function App() {
       if (hash && !hash.startsWith("#article/")) return;
       const id = readArticleId();
       setArticleId(id);
-      if (id) setSection("projects");
+      if (id) {
+        setSection("projects");
+        setScene("projects");
+      }
     }
     window.addEventListener("hashchange", onHash);
     return () => window.removeEventListener("hashchange", onHash);
@@ -41,10 +45,12 @@ export default function App() {
   function selectSection(id: SectionId) {
     setArticleId("");
     clearHash();
+    setScene(id);
     setSection(section === id ? null : id);
   }
 
   function openArticle(id: string) {
+    setScene("projects");
     setSection("projects");
     setArticleId(id);
     window.location.hash = `article/${id}`;
@@ -64,6 +70,7 @@ export default function App() {
         content={content}
         error={contentError}
         section={section}
+        scene={scene}
         articleId={articleId}
         onSelect={selectSection}
         onOpenArticle={openArticle}

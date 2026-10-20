@@ -4,10 +4,11 @@ type ViewportProps = {
   title: string;
   citySrc: string;
   caption: string;
+  credit: string;
   children: ReactNode;
 };
 
-export function Viewport({ title, citySrc, caption, children }: ViewportProps) {
+export function Viewport({ title, citySrc, caption, credit, children }: ViewportProps) {
   return (
     <section className="screen-shell" id="main" tabIndex={-1} aria-labelledby="screen-title">
       <span className="screw screw-tl" aria-hidden="true" />
@@ -22,6 +23,7 @@ export function Viewport({ title, citySrc, caption, children }: ViewportProps) {
           {children}
           {caption ? <p className="city-caption">{caption}</p> : null}
         </div>
+        <p className="screen-credit">{credit}</p>
       </div>
     </section>
   );

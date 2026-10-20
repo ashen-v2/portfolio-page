@@ -37,10 +37,10 @@ export function SideColumn({ profile, badges, portraitSrc, location }: SideColum
           <span className="screw screw-br" aria-hidden="true" />
           <div className="slot">
             {badges.length ? (
-              <ul className="status-row">
+              <ul className="badge-row side-badges">
                 {badges.map((badge) => (
-                  <li className={`status-chip status-${badge.tone}`} key={badge.label}>
-                    {badge.label}
+                  <li key={badge.label}>
+                    <span className={`badge badge-${badge.tone}`}>{badge.label}</span>
                   </li>
                 ))}
               </ul>

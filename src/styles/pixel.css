@@ -75,14 +75,6 @@ a {
   top: 12px;
 }
 
-.desk-credit {
-  margin: 0;
-  color: #f7fbff;
-  font-size: 13px;
-  font-weight: 800;
-  text-shadow: 0 1px 0 #1a2140;
-}
-
 .console {
   position: relative;
   width: min(1100px, 100%);
@@ -182,6 +174,8 @@ a {
 
 .screen {
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   border-radius: 6px;
   border: 3px solid #e090ff;
   background: #0e1c4e;
@@ -228,6 +222,18 @@ a {
   background: rgba(10, 24, 70, 0.72);
 }
 
+.screen-credit {
+  margin: 0;
+  padding: 5px 10px 6px;
+  text-align: center;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-weight: 800;
+  color: #f7f9ff;
+  background: linear-gradient(#1736a8, #102878);
+  border-top: 3px solid #0c1c58;
+}
+
 .panel {
   position: absolute;
   inset: 10px;
@@ -254,7 +260,7 @@ a {
   position: relative;
   margin: 0 0 12px;
   border: 4px solid #1c2744;
-  background: rgba(255, 248, 236, 0.74);
+  background: rgba(255, 248, 236, 0.88);
   box-shadow:
     inset 0 0 0 3px #f3d56a,
     5px 5px 0 rgba(36, 10, 72, 0.42);
@@ -365,8 +371,7 @@ a {
 
 .badge-row,
 .chip-row,
-.quest-toolbar,
-.status-row {
+.quest-toolbar {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -757,13 +762,13 @@ a {
 }
 
 .slot {
-  width: 70%;
+  width: calc(100% - 8px);
   min-height: 28px;
-  margin: 2px auto 0;
+  margin: 2px 4px 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 3px 4px;
+  padding: 4px;
   border: 2px solid #6a7180;
   background: linear-gradient(#10131a, #1c2230);
   box-shadow: inset 0 0 0 2px #3a414e, inset 0 3px 0 rgba(0, 0, 0, 0.45);
@@ -776,29 +781,19 @@ a {
   background: #2a3140;
 }
 
-.status-row {
+.side-badges {
   justify-content: center;
   align-items: center;
   margin: 0;
   padding: 0;
   list-style: none;
-  gap: 3px;
+  gap: 4px;
 }
 
-.status-chip {
-  padding: 1px 3px;
-  border: 0;
-  background: transparent;
-  color: #d5ffe0;
-  font-family: var(--font-display);
-  font-size: 9px;
-  line-height: 1.25;
-  text-align: center;
+.side-badges .badge {
+  font-size: 11px;
+  line-height: 1.2;
 }
-
-.status-gold { color: #ffe08a; }
-.status-cyan { color: #b9d6ff; }
-.status-mint { color: #b6f0c0; }
 
 .portrait-block {
   flex: 1;
@@ -1119,9 +1114,9 @@ a {
   .console {
     display: flex;
     flex-direction: column;
-    width: min(100%, calc((100dvh - 72px) * 16 / 9));
+    width: min(100%, calc((100dvh - 52px) * 16 / 9));
     aspect-ratio: 16 / 9;
-    max-height: calc(100dvh - 72px);
+    max-height: calc(100dvh - 52px);
     min-height: 0;
   }
 

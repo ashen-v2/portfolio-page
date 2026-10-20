@@ -22,6 +22,7 @@ type ConsoleProps = {
   content: SiteContent | null;
   error: string;
   section: SectionId | null;
+  scene: SectionId | null;
   articleId: string;
   onSelect: (id: SectionId) => void;
   onOpenArticle: (id: string) => void;
@@ -32,6 +33,7 @@ export function Console({
   content,
   error,
   section,
+  scene,
   articleId,
   onSelect,
   onOpenArticle,
@@ -75,7 +77,12 @@ export function Console({
         <span className="screw screw-outer screw-bl" aria-hidden="true" />
         <span className="screw screw-outer screw-br" aria-hidden="true" />
         <div className="console-body">
-          <Viewport title={title} citySrc={section ? sceneSrc[section] : citySrc} caption={caption}>
+          <Viewport
+            title={title}
+            citySrc={scene ? sceneSrc[scene] : citySrc}
+            caption={caption}
+            credit={`© 2026 ${content?.profile.name ?? "Ashen Viduranga"}`}
+          >
             {panel}
           </Viewport>
           <SideColumn
@@ -87,7 +94,6 @@ export function Console({
           <ToolDock section={section} enabled={Boolean(content)} onSelect={onSelect} />
         </div>
       </div>
-      <p className="desk-credit">© 2026 {content?.profile.name ?? "Ashen Viduranga"}</p>
     </div>
   );
 }
