@@ -32,6 +32,8 @@ export type SiteContent = {
     subtitle: string;
     points: string[];
     stack: string[];
+    priority: number;
+    article?: string;
   }[];
   experience: {
     title: string;

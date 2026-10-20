@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BootScreen } from "./components/BootScreen";
 import { HudNav } from "./components/HudNav";
 import { PixelWindow } from "./components/PixelWindow";
+import { QuestArticle } from "./components/QuestArticle";
 import { QuestCard } from "./components/QuestCard";
 import { SkillTile } from "./components/SkillBar";
 import { CloudSprite, PixelAvatar, ServerSprite, StarSprite } from "./components/Sprites";
@@ -14,6 +15,19 @@ function prefersReducedMotion() {
 }
 
 const PORTRAIT_CLICKS = 5;
+const QUEST_PREVIEW = 3;
+
+function readArticleId() {
+  const match = /^#article\/([a-z0-9-]+)$/i.exec(window.location.hash);
+  return match ? match[1].toLowerCase() : "";
+}
+
+function byPriority<T extends { priority: number }>(items: T[]) {
+  return items
+    .map((item, index) => ({ item, index }))
+    .sort((a, b) => a.item.priority - b.item.priority || a.index - b.index)
+    .map(({ item }) => item);
+}
 
 function Portfolio({
   content,
@@ -24,16 +38,42 @@ function Portfolio({
 }) {
   const { profile, badges, education, certifications, skillGroups, quests, experience, saveData } =
     content;
+  const [showAllQuests, setShowAllQuests] = useState(false);
+  const [articleId, setArticleId] = useState(readArticleId);
+  const orderedQuests = useMemo(() => byPriority(quests), [quests]);
+  const visibleQuests = showAllQuests ? orderedQuests : orderedQuests.slice(0, QUEST_PREVIEW);
+  const openQuest = orderedQuests.find((quest) => quest.id === articleId);
+
+  useEffect(() => {
+    function onHash() {
+      setArticleId(readArticleId());
+    }
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+
+  useEffect(() => {
+    if (!articleId) return;
+    document.getElementById("quests")?.scrollIntoView();
+  }, [articleId]);
+
+  function openArticle(id: string) {
+    window.location.hash = `article/${id}`;
+  }
+
+  function closeArticle() {
+    window.location.hash = "quests";
+  }
 
   return (
     <>
-      <PixelWindow id="start" title="PARTY STATUS" icon={<CloudSprite size={20} />}>
+      <PixelWindow id="start" title="PARTY STATUS" plain="About" icon={<CloudSprite size={20} />}>
         <div className="hero-grid">
           <button
             type="button"
             className="avatar-btn"
             onClick={tapPortrait}
-            aria-label="Pixel portrait of Ashen"
+            aria-label="Trainer portrait of Ashen"
           >
             <PixelAvatar decorative />
           </button>
@@ -73,7 +113,7 @@ function Portfolio({
       </PixelWindow>
 
       <div className="split split-certs">
-        <PixelWindow id="education" title="JOURNEY" icon={<ServerSprite size={20} />}>
+        <PixelWindow id="education" title="JOURNEY" plain="Education" icon={<ServerSprite size={20} />}>
           <div className="log-list">
             {education.map((item) => (
               <article className="log-item" key={item.title}>
@@ -87,7 +127,12 @@ function Portfolio({
         </PixelWindow>
 
         <div className="certs-slot">
-          <PixelWindow className="certs-window" title="BADGES" icon={<StarSprite size={20} />}>
+          <PixelWindow
+            className="certs-window"
+            title="BADGES"
+            plain="Certificates"
+            icon={<StarSprite size={20} />}
+          >
             <div className="cert-list">
               {certifications.map((cert) => (
                 <article className="cert" key={cert.title}>
@@ -104,7 +149,7 @@ function Portfolio({
         </div>
       </div>
 
-      <PixelWindow id="skills" title="BAG">
+      <PixelWindow id="skills" title="BAG" plain="Tools and technologies">
         <div className="skill-groups">
           {skillGroups.map((group) => (
             <div className={`skill-group pocket-${group.id}`} key={group.id}>
@@ -124,16 +169,52 @@ function Portfolio({
         </div>
       </PixelWindow>
 
-      <PixelWindow id="quests" title="QUESTS">
-        <div className="quest-grid">
-          {quests.map((quest) => (
-            <QuestCard key={quest.id} {...quest} />
-          ))}
-        </div>
+      <PixelWindow id="quests" title="QUESTS" plain="Projects">
+        {articleId ? (
+          openQuest?.article ? (
+            <QuestArticle file={openQuest.article} onBack={closeArticle} />
+          ) : (
+            <div className="article-view">
+              <p>This article is not available.</p>
+              <div className="quest-toolbar">
+                <button type="button" className="btn secondary" onClick={closeArticle}>
+                  Back
+                </button>
+              </div>
+            </div>
+          )
+        ) : (
+          <>
+            <div className="quest-grid">
+              {visibleQuests.map((quest) => (
+                <QuestCard
+                  key={quest.id}
+                  title={quest.title}
+                  status={quest.status}
+                  subtitle={quest.subtitle}
+                  points={quest.points}
+                  stack={quest.stack}
+                  onReadMore={quest.article ? () => openArticle(quest.id) : undefined}
+                />
+              ))}
+            </div>
+            {orderedQuests.length > QUEST_PREVIEW ? (
+              <div className="quest-toolbar">
+                <button
+                  type="button"
+                  className="btn secondary"
+                  onClick={() => setShowAllQuests((open) => !open)}
+                >
+                  {showAllQuests ? "Show less" : "See all"}
+                </button>
+              </div>
+            ) : null}
+          </>
+        )}
       </PixelWindow>
 
       <div className="split" id="log">
-        <PixelWindow title="FIELD NOTES">
+        <PixelWindow title="FIELD NOTES" plain="Experience">
           <div className="log-list">
             {experience.map((job) => (
               <article className="log-item" key={job.title}>
@@ -152,7 +233,7 @@ function Portfolio({
           </div>
         </PixelWindow>
 
-        <PixelWindow title="TRAINER CARD">
+        <PixelWindow title="TRAINER CARD" plain="Profile">
           <div className="log-list">
             {saveData.map((entry) => (
               <article className="log-item" key={entry.label}>
@@ -164,7 +245,7 @@ function Portfolio({
         </PixelWindow>
       </div>
 
-      <PixelWindow id="contact" title="MAIL">
+      <PixelWindow id="contact" title="MAIL" plain="Contact">
         <div className="contact-grid">
           <p>
             <strong>EMAIL</strong>
@@ -259,6 +340,11 @@ export default function App() {
         © 2026 {content?.profile.name ?? "Ashen Viduranga"} · Hoenn route
       </p>
       <p className="pixel-footer egg-hint">Tap the portrait five times.</p>
+      <div className="ground" aria-hidden>
+        <span className="ground-tuft" />
+        <span className="ground-tuft ground-tuft-b" />
+        <span className="ground-tuft ground-tuft-c" />
+      </div>
       {portraitOpen ? (
         <div className="portrait-overlay" onClick={closePortrait}>
           <div

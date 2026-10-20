@@ -119,6 +119,8 @@
   "quests": [
     {
       "id": "xala",
+      "priority": 1,
+      "article": "xala.md",
       "title": "Xala",
       "status": "LIVE",
       "subtitle": "Containerized app on AWS EC2 with CI/CD",
@@ -131,6 +133,7 @@
     },
     {
       "id": "ha",
+      "priority": 2,
       "title": "AWS Multi-AZ HA Architecture",
       "status": "DESIGN",
       "subtitle": "3-tier high-availability design + cost model",
@@ -142,6 +145,7 @@
     },
     {
       "id": "tools",
+      "priority": 3,
       "title": "Automation & API Projects",
       "status": "TOOL",
       "subtitle": "Python workflows and educational search",
