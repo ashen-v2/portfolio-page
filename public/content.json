@@ -14,8 +14,8 @@
   },
   "badges": [
     { "label": "AWS CCP", "tone": "gold" },
-    { "label": "FIRST CLASS", "tone": "cyan" },
-    { "label": "RE/START", "tone": "mint" }
+    { "label": "Docker", "tone": "cyan" },
+    { "label": "Terraform", "tone": "mint" }
   ],
   "education": [
     {
@@ -134,6 +134,7 @@
     {
       "id": "ha",
       "priority": 2,
+      "article": "multi-az-ha.md",
       "title": "AWS Multi-AZ HA Architecture",
       "status": "DESIGN",
       "subtitle": "3-tier high-availability design + cost model",
