@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { SiteContent } from "../../data/content";
 import { SectionPanel } from "./SectionPanel";
 import { SideColumn } from "./SideColumn";
@@ -9,12 +9,14 @@ import { moduleTitle, type SectionId } from "./modules";
 
 type PhoneLayout = "stage" | "stack";
 
-function readLayout(): PhoneLayout {
+function storedLayout(): PhoneLayout | null {
   try {
-    return localStorage.getItem("console-layout") === "stack" ? "stack" : "stage";
+    const saved = localStorage.getItem("console-layout");
+    if (saved === "stack" || saved === "stage") return saved;
   } catch {
-    return "stage";
+    /* use the content default */
   }
+  return null;
 }
 
 const base = import.meta.env.BASE_URL;
@@ -55,12 +57,19 @@ export function Console({
   onOpenArticle,
   onCloseArticle,
 }: ConsoleProps) {
-  const [layout, setLayout] = useState<PhoneLayout>(readLayout);
+  const chosen = useRef(storedLayout() !== null);
+  const [layout, setLayout] = useState<PhoneLayout>(storedLayout() ?? "stage");
   const articleQuest = content?.quests.find((quest) => quest.id === articleId);
+
+  useEffect(() => {
+    if (chosen.current) return;
+    setLayout(content?.["default mobile view"] === true ? "stack" : "stage");
+  }, [content]);
 
   function toggleLayout() {
     setLayout((current) => {
       const next = current === "stage" ? "stack" : "stage";
+      chosen.current = true;
       try {
         localStorage.setItem("console-layout", next);
       } catch {

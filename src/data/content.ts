@@ -16,6 +16,7 @@ export type Profile = {
 };
 
 export type SiteContent = {
+  "default mobile view": boolean;
   profile: Profile;
   badges: { label: string; tone: BadgeTone }[];
   education: { title: string; note: string; org: string; when: string }[];
@@ -67,11 +68,12 @@ export function linkLabel(url: string) {
 }
 
 export async function loadContent(): Promise<SiteContent> {
-  const response = await fetch(`${import.meta.env.BASE_URL}content.json`);
+  const response = await fetch(`${import.meta.env.BASE_URL}content.json`, { cache: "no-store" });
   if (!response.ok) {
     throw new Error("Could not read content.json");
   }
   const data = (await response.json()) as SiteContent;
+  data["default mobile view"] = data["default mobile view"] === true;
   const cv = data.profile.cvFile;
   if (cv && !cv.startsWith("http") && !cv.startsWith(import.meta.env.BASE_URL)) {
     data.profile.cvFile = `${import.meta.env.BASE_URL}${cv.replace(/^\//, "")}`;
