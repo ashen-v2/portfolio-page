@@ -1081,7 +1081,7 @@ a {
 
 .keys {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(7, minmax(0, 1fr));
   gap: 6px;
 }
 
@@ -1411,7 +1411,7 @@ a {
   .desk[data-layout="stage"] .keys {
     height: 100%;
     min-height: 0;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-template-columns: repeat(7, minmax(0, 1fr));
   }
 
   .desk[data-layout="stage"] .console-key {
@@ -1552,5 +1552,120 @@ a {
 
   .desk[data-layout="stack"] .logo-badge h1 {
     font-size: 24px;
+  }
+}
+
+.terminal {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: #07140c;
+  color: #7cff6b;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.terminal-log {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  overflow: auto;
+  padding: 10px 12px 4px;
+  container-type: inline-size;
+}
+
+.terminal-log p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.terminal-cmd {
+  font-family: var(--font-display);
+  color: #b6ff9a;
+}
+
+.terminal-log p.terminal-out,
+.terminal-log p.terminal-trace {
+  font-family: "Courier New", ui-monospace, monospace;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.terminal-out {
+  color: #7cff6b;
+}
+
+.terminal-trace {
+  color: #d8ffc4;
+}
+
+.terminal-form input:disabled {
+  opacity: 0.35;
+}
+
+.terminal-log p.terminal-banner {
+  font-family: "Courier New", ui-monospace, monospace;
+  color: #c6ffb0;
+  font-size: calc(100cqi / 20);
+  line-height: 1.05;
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
+@media (min-width: 1101px) {
+  .terminal-log p.terminal-banner {
+    font-size: min(20px, calc(100cqi / 20));
+  }
+}
+
+.terminal-form {
+  display: flex;
+  flex: none;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 10px 8px;
+  border-top: 2px solid #1d5a32;
+  background: #041008;
+}
+
+.terminal-prompt {
+  flex: none;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: #b6ff9a;
+}
+
+.terminal-form input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: #7cff6b;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 14px;
+  line-height: 1.35;
+  outline: none;
+  caret-color: #7cff6b;
+}
+
+@media (min-width: 821px) {
+  .terminal,
+  .terminal-prompt,
+  .terminal-form input {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .desk[data-layout="stage"] .terminal,
+  .desk[data-layout="stage"] .terminal-prompt,
+  .desk[data-layout="stage"] .terminal-form input {
+    font-size: calc(14px * 1100px / 100cqw);
   }
 }

@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import type { SectionId } from "./modules";
 
-export type PixelIconName = SectionId | "github" | "linkedin" | "mail" | "cv";
+export type PixelIconName = SectionId | "github" | "linkedin" | "mail" | "cv" | "terminal";
 
 function r(x: number, y: number, w: number, h: number, fill: string) {
   return <rect key={`${x}-${y}-${w}-${h}-${fill}`} x={x} y={y} width={w} height={h} fill={fill} />;
@@ -109,6 +109,17 @@ const icons: Record<PixelIconName, ReactNode> = {
       {r(7, 2, 5, 2, "#ffe14a")}
       {r(11, 4, 2, 2, "#e23b4a")}
       {r(9, 11, 2, 2, "#e2b423")}
+    </>
+  ),
+  terminal: (
+    <>
+      {r(1, 2, 14, 9, "#14301c")}
+      {r(2, 3, 12, 7, "#07140c")}
+      {r(3, 5, 2, 2, "#7cff6b")}
+      {r(6, 5, 5, 2, "#7cff6b")}
+      {r(3, 8, 3, 1, "#3d8f52")}
+      {r(2, 11, 12, 2, "#6d7586")}
+      {r(6, 13, 4, 2, "#3a414e")}
     </>
   ),
   work: (

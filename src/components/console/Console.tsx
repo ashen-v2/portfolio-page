@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { SiteContent } from "../../data/content";
 import { SectionPanel } from "./SectionPanel";
 import { SideColumn } from "./SideColumn";
+import { Terminal } from "./Terminal";
 import { ToolDock } from "./ToolDock";
 import { Viewport } from "./Viewport";
 import { moduleTitle, type SectionId } from "./modules";
@@ -35,7 +36,9 @@ type ConsoleProps = {
   section: SectionId | null;
   scene: SectionId | null;
   articleId: string;
+  terminalOpen: boolean;
   onSelect: (id: SectionId) => void;
+  onToggleTerminal: () => void;
   onOpenArticle: (id: string) => void;
   onCloseArticle: () => void;
 };
@@ -46,7 +49,9 @@ export function Console({
   section,
   scene,
   articleId,
+  terminalOpen,
   onSelect,
+  onToggleTerminal,
   onOpenArticle,
   onCloseArticle,
 }: ConsoleProps) {
@@ -64,15 +69,20 @@ export function Console({
       return next;
     });
   }
-  const title =
-    section === "projects" && articleId
+  const title = terminalOpen
+    ? "TERMINAL"
+    : section === "projects" && articleId
       ? (articleQuest?.title ?? "PROJECTS").toUpperCase()
       : moduleTitle(section);
   const caption =
-    !section && !error && content ? `${content.profile.name} · ${content.profile.tagline}` : "";
+    terminalOpen || section || error || !content
+      ? ""
+      : `${content.profile.name} · ${content.profile.tagline}`;
 
   let panel = null;
-  if (error) {
+  if (terminalOpen && content) {
+    panel = <Terminal content={content} onOpenArticle={onOpenArticle} />;
+  } else if (error) {
     panel = (
       <div className="panel" id="module-panel" role="alert">
         <p>{error}</p>
@@ -119,7 +129,13 @@ export function Console({
             portraitSrc={portraitSrc}
             location={content?.profile.location ?? ""}
           />
-          <ToolDock section={section} enabled={Boolean(content)} onSelect={onSelect} />
+          <ToolDock
+            section={section}
+            terminalOpen={terminalOpen}
+            enabled={Boolean(content)}
+            onSelect={onSelect}
+            onToggleTerminal={onToggleTerminal}
+          />
         </div>
       </div>
       </div>
