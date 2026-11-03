@@ -3,6 +3,7 @@ import type { SiteContent } from "../../data/content";
 import { Calculator } from "./Calculator";
 import { CanvasPad } from "./CanvasPad";
 import { Files } from "./Files";
+import { Quest } from "./game/Quest";
 import { HomeScreen } from "./HomeScreen";
 import { Notes } from "./Notes";
 import { SectionPanel } from "./SectionPanel";
@@ -10,7 +11,7 @@ import { SideColumn } from "./SideColumn";
 import { Terminal } from "./Terminal";
 import { ToolDock } from "./ToolDock";
 import { Viewport } from "./Viewport";
-import { moduleTitle, toolTitle, type SectionId, type ToolId } from "./modules";
+import { moduleTitle, sectionScene, toolTitle, type SectionId, type ToolId } from "./modules";
 
 type PhoneLayout = "stage" | "stack";
 
@@ -27,15 +28,6 @@ function storedLayout(): PhoneLayout | null {
 const base = import.meta.env.BASE_URL;
 const citySrc = `${base}console/city.png`;
 const portraitSrc = `${base}console/portrait.png`;
-
-const sceneSrc: Record<SectionId, string> = {
-  about: `${base}console/scene-about.png`,
-  education: `${base}console/scene-education.png`,
-  certs: `${base}console/scene-certs.png`,
-  projects: `${base}console/scene-projects.png`,
-  skills: `${base}console/scene-skills.png`,
-  work: `${base}console/scene-work.png`,
-};
 
 type ConsoleProps = {
   content: SiteContent | null;
@@ -70,8 +62,26 @@ export function Console({
 
   useEffect(() => {
     if (chosen.current) return;
+    if (window.matchMedia("(min-width: 1101px)").matches) return;
     setLayout(content?.["default mobile view"] === true ? "stack" : "stage");
   }, [content]);
+
+  useEffect(() => {
+    const wide = window.matchMedia("(min-width: 1101px)");
+    function useConsoleLayout() {
+      if (!wide.matches) return;
+      setLayout("stage");
+      chosen.current = true;
+      try {
+        localStorage.setItem("console-layout", "stage");
+      } catch {
+        /* keep the choice for this visit */
+      }
+    }
+    useConsoleLayout();
+    wide.addEventListener("change", useConsoleLayout);
+    return () => wide.removeEventListener("change", useConsoleLayout);
+  }, []);
 
   function toggleLayout() {
     setLayout((current) => {
@@ -109,8 +119,10 @@ export function Console({
     panel = <CanvasPad />;
   } else if (tool === "calc") {
     panel = <Calculator />;
-  } else if (home) {
-    panel = <HomeScreen onOpen={onOpenTool} />;
+  } else if (tool === "quest") {
+    panel = <Quest content={content} />;
+  } else if (home && content) {
+    panel = <HomeScreen handle={content.profile.handle} onOpen={onOpenTool} />;
   } else if (error) {
     panel = (
       <div className="panel" id="module-panel" role="alert">
@@ -146,9 +158,10 @@ export function Console({
         <div className="console-body">
           <Viewport
             title={title}
-            citySrc={scene ? sceneSrc[scene] : citySrc}
+            citySrc={scene ? sectionScene[scene] : citySrc}
             caption={caption}
             credit={`© 2026 ${content?.profile.name ?? "Ashen Viduranga"}`}
+            onClose={home ? undefined : onHome}
           >
             {panel}
           </Viewport>

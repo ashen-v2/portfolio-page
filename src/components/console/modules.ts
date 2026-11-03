@@ -15,9 +15,21 @@ export const toolKeys = [
   { id: "notes", label: "Notes", title: "NOTES" },
   { id: "canvas", label: "Canvas", title: "CANVAS" },
   { id: "calc", label: "Calculator", title: "CALCULATOR" },
+  { id: "quest", label: "Quest", title: "QUEST" },
 ] as const;
 
 export type ToolId = (typeof toolKeys)[number]["id"];
+
+const sceneBase = import.meta.env.BASE_URL;
+
+export const sectionScene: Record<SectionId, string> = {
+  about: `${sceneBase}console/scene-about.png`,
+  education: `${sceneBase}console/scene-education.png`,
+  certs: `${sceneBase}console/scene-certs.png`,
+  projects: `${sceneBase}console/scene-projects.png`,
+  skills: `${sceneBase}console/scene-skills.png`,
+  work: `${sceneBase}console/scene-work.png`,
+};
 
 export function moduleTitle(section: SectionId | null) {
   if (!section) return "SELECT A MODULE";

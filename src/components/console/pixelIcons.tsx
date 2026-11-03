@@ -12,6 +12,7 @@ export type PixelIconName =
   | "notes"
   | "canvas"
   | "calc"
+  | "quest"
   | "files"
   | "folder";
 
@@ -182,6 +183,18 @@ const icons: Record<PixelIconName, ReactNode> = {
       {r(1, 5, 14, 8, "#ffe14a")}
       {r(2, 6, 12, 1, "#fff6b0")}
       {r(1, 11, 14, 2, "#c99216")}
+    </>
+  ),
+  quest: (
+    <>
+      {r(2, 3, 7, 10, "#3d66e6")}
+      {r(3, 4, 5, 8, "#7ad0ff")}
+      {r(5, 6, 2, 3, "#ffe14a")}
+      {r(10, 1, 2, 11, "#fff8e8")}
+      {r(11, 2, 1, 8, "#e2b423")}
+      {r(8, 3, 6, 2, "#fff8e8")}
+      {r(9, 4, 4, 1, "#e2b423")}
+      {r(10, 12, 2, 3, "#8a5420")}
     </>
   ),
   calc: (
