@@ -3,6 +3,7 @@ import type { SiteContent } from "../../data/content";
 import { Calculator } from "./Calculator";
 import { CanvasPad } from "./CanvasPad";
 import { Files } from "./Files";
+import { Quest } from "./game/Quest";
 import { HomeScreen } from "./HomeScreen";
 import { Notes } from "./Notes";
 import { SectionPanel } from "./SectionPanel";
@@ -109,6 +110,8 @@ export function Console({
     panel = <CanvasPad />;
   } else if (tool === "calc") {
     panel = <Calculator />;
+  } else if (tool === "quest") {
+    panel = <Quest />;
   } else if (home) {
     panel = <HomeScreen onOpen={onOpenTool} />;
   } else if (error) {
