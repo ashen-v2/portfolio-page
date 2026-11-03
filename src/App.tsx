@@ -20,6 +20,7 @@ export default function App() {
   const [articleId, setArticleId] = useState(initialArticle);
   const [section, setSection] = useState<SectionId | null>(initialArticle ? "projects" : null);
   const [scene, setScene] = useState<SectionId | null>(initialArticle ? "projects" : null);
+  const [terminalOpen, setTerminalOpen] = useState(false);
 
   useEffect(() => {
     loadContent()
@@ -34,6 +35,7 @@ export default function App() {
       const id = readArticleId();
       setArticleId(id);
       if (id) {
+        setTerminalOpen(false);
         setSection("projects");
         setScene("projects");
       }
@@ -43,13 +45,22 @@ export default function App() {
   }, []);
 
   function selectSection(id: SectionId) {
+    setTerminalOpen(false);
     setArticleId("");
     clearHash();
     setScene(id);
     setSection(section === id ? null : id);
   }
 
+  function toggleTerminal() {
+    setArticleId("");
+    clearHash();
+    setSection(null);
+    setTerminalOpen((open) => !open);
+  }
+
   function openArticle(id: string) {
+    setTerminalOpen(false);
     setScene("projects");
     setSection("projects");
     setArticleId(id);
@@ -72,7 +83,9 @@ export default function App() {
         section={section}
         scene={scene}
         articleId={articleId}
+        terminalOpen={terminalOpen}
         onSelect={selectSection}
+        onToggleTerminal={toggleTerminal}
         onOpenArticle={openArticle}
         onCloseArticle={closeArticle}
       />

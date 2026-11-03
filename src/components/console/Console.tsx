@@ -1,19 +1,22 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { SiteContent } from "../../data/content";
 import { SectionPanel } from "./SectionPanel";
 import { SideColumn } from "./SideColumn";
+import { Terminal } from "./Terminal";
 import { ToolDock } from "./ToolDock";
 import { Viewport } from "./Viewport";
 import { moduleTitle, type SectionId } from "./modules";
 
 type PhoneLayout = "stage" | "stack";
 
-function readLayout(): PhoneLayout {
+function storedLayout(): PhoneLayout | null {
   try {
-    return localStorage.getItem("console-layout") === "stack" ? "stack" : "stage";
+    const saved = localStorage.getItem("console-layout");
+    if (saved === "stack" || saved === "stage") return saved;
   } catch {
-    return "stage";
+    /* use the content default */
   }
+  return null;
 }
 
 const base = import.meta.env.BASE_URL;
@@ -35,7 +38,9 @@ type ConsoleProps = {
   section: SectionId | null;
   scene: SectionId | null;
   articleId: string;
+  terminalOpen: boolean;
   onSelect: (id: SectionId) => void;
+  onToggleTerminal: () => void;
   onOpenArticle: (id: string) => void;
   onCloseArticle: () => void;
 };
@@ -46,16 +51,25 @@ export function Console({
   section,
   scene,
   articleId,
+  terminalOpen,
   onSelect,
+  onToggleTerminal,
   onOpenArticle,
   onCloseArticle,
 }: ConsoleProps) {
-  const [layout, setLayout] = useState<PhoneLayout>(readLayout);
+  const chosen = useRef(storedLayout() !== null);
+  const [layout, setLayout] = useState<PhoneLayout>(storedLayout() ?? "stage");
   const articleQuest = content?.quests.find((quest) => quest.id === articleId);
+
+  useEffect(() => {
+    if (chosen.current) return;
+    setLayout(content?.["default mobile view"] === true ? "stack" : "stage");
+  }, [content]);
 
   function toggleLayout() {
     setLayout((current) => {
       const next = current === "stage" ? "stack" : "stage";
+      chosen.current = true;
       try {
         localStorage.setItem("console-layout", next);
       } catch {
@@ -64,15 +78,20 @@ export function Console({
       return next;
     });
   }
-  const title =
-    section === "projects" && articleId
+  const title = terminalOpen
+    ? "TERMINAL"
+    : section === "projects" && articleId
       ? (articleQuest?.title ?? "PROJECTS").toUpperCase()
       : moduleTitle(section);
   const caption =
-    !section && !error && content ? `${content.profile.name} · ${content.profile.tagline}` : "";
+    terminalOpen || section || error || !content
+      ? ""
+      : `${content.profile.name} · ${content.profile.tagline}`;
 
   let panel = null;
-  if (error) {
+  if (terminalOpen && content) {
+    panel = <Terminal content={content} onOpenArticle={onOpenArticle} />;
+  } else if (error) {
     panel = (
       <div className="panel" id="module-panel" role="alert">
         <p>{error}</p>
@@ -119,7 +138,13 @@ export function Console({
             portraitSrc={portraitSrc}
             location={content?.profile.location ?? ""}
           />
-          <ToolDock section={section} enabled={Boolean(content)} onSelect={onSelect} />
+          <ToolDock
+            section={section}
+            terminalOpen={terminalOpen}
+            enabled={Boolean(content)}
+            onSelect={onSelect}
+            onToggleTerminal={onToggleTerminal}
+          />
         </div>
       </div>
       </div>
