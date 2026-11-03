@@ -1,4 +1,4 @@
-export const serviceApps = ["files", "notes", "canvas", "calc", "quest"] as const;
+export const serviceApps = ["files", "notes", "canvas", "calc", "quest", "vault"] as const;
 
 export type ServiceApp = (typeof serviceApps)[number];
 
@@ -13,6 +13,7 @@ export function freshServices(): ServiceState {
     canvas: { installed: true, enabled: true },
     calc: { installed: true, enabled: true },
     quest: { installed: true, enabled: true },
+    vault: { installed: false, enabled: false },
   };
 }
 
@@ -20,7 +21,7 @@ export function resolveApp(name: string): ServiceApp | null {
   const key = name.toLowerCase();
   if (key === "calculator") return "calc";
   if (key === "quests" || key === "quest") return "quest";
-  if (key === "files" || key === "notes" || key === "canvas" || key === "calc") return key;
+  if (key === "files" || key === "notes" || key === "canvas" || key === "calc" || key === "vault") return key;
   return null;
 }
 

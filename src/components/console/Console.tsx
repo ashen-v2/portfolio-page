@@ -10,6 +10,7 @@ import { SectionPanel } from "./SectionPanel";
 import { SideColumn } from "./SideColumn";
 import { Terminal } from "./Terminal";
 import { ToolDock } from "./ToolDock";
+import { Vault } from "./Vault";
 import { Viewport } from "./Viewport";
 import { moduleTitle, sectionScene, toolTitle, type SectionId, type ToolId } from "./modules";
 import { freshServices, type ServiceApp, type ServiceState } from "./services";
@@ -60,11 +61,12 @@ export function Console({
   const chosen = useRef(storedLayout() !== null);
   const [layout, setLayout] = useState<PhoneLayout>(storedLayout() ?? "stage");
   const [services, setServices] = useState<ServiceState>(freshServices);
+  const [terminalBooted, setTerminalBooted] = useState(false);
 
   function installApp(id: ServiceApp, installed: boolean) {
     setServices((current) => ({
       ...current,
-      [id]: { installed, enabled: installed },
+      [id]: { installed, enabled: installed && id !== "vault" },
     }));
   }
 
@@ -134,6 +136,8 @@ export function Console({
         onOpenTool={onOpenTool}
         onInstall={installApp}
         onPower={powerApp}
+        skipBoot={terminalBooted}
+        onBooted={() => setTerminalBooted(true)}
       />
     );
   } else if (tool === "files") {
@@ -146,6 +150,8 @@ export function Console({
     panel = <Calculator />;
   } else if (tool === "quest") {
     panel = <Quest content={content} />;
+  } else if (tool === "vault") {
+    panel = <Vault />;
   } else if (home && content) {
     panel = <HomeScreen handle={content.profile.handle} services={services} onOpen={onOpenTool} />;
   } else if (error) {

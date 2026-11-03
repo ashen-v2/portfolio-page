@@ -142,6 +142,15 @@ export function HomeScreen({
               <strong>ONLINE</strong>
             </p>
           </section>
+          <button
+            type="button"
+            className={`home-vault${services.vault.installed && services.vault.enabled ? "" : " home-widget-off"}`}
+            disabled={!(services.vault.installed && services.vault.enabled)}
+            onClick={() => onOpen("vault")}
+          >
+            <img src={art("vault")} alt="" />
+            <span>Vault</span>
+          </button>
         </div>
       </div>
     </div>

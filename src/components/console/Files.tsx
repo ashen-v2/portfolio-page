@@ -15,7 +15,7 @@ const pictures = [
   { id: "work", label: "work", src: sectionScene.work },
 ];
 
-const bins: { id: ServiceApp; tool: ToolId; file: string }[] = [
+const bins: { id: ServiceApp; tool: "quest" | "files" | "canvas" | "calc"; file: string }[] = [
   { id: "quest", tool: "quest", file: "quest.bin" },
   { id: "files", tool: "files", file: "files.bin" },
   { id: "canvas", tool: "canvas", file: "canvas.bin" },

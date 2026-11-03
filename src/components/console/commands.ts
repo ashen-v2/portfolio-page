@@ -30,6 +30,7 @@ const HELP = [
   "canvas      open the canvas",
   "calculator  open the calculator",
   "ps          running services",
+  "apt list     extra packages",
   "apt install|uninstall <app>",
   "systemctl enable|disable <app>",
 ];
@@ -42,6 +43,7 @@ const launch: Record<string, ToolId> = {
   canvas: "canvas",
   calculator: "calc",
   calc: "calc",
+  vault: "vault",
 };
 
 function questsInOrder(content: SiteContent) {
@@ -92,7 +94,7 @@ export function runCommand(raw: string, content: SiteContent, services: ServiceS
   if (name === "ps") {
     const rows = ["  PID TTY          CMD", "  112 ?            nginx", "  148 ?            sshd"];
     let pid = 201;
-    for (const app of ["files", "notes", "canvas", "calc", "quest"] as const) {
+    for (const app of ["files", "notes", "canvas", "calc", "quest", "vault"] as const) {
       const state = services[app];
       if (!state.installed || !state.enabled) continue;
       rows.push(`  ${pid} ?            ${serviceLabel(app)}.service`);
@@ -103,14 +105,38 @@ export function runCommand(raw: string, content: SiteContent, services: ServiceS
 
   if (name === "apt") {
     const verb = parts[1]?.toLowerCase();
+    if (verb === "list" && parts.length === 2) {
+      const vault = services.vault;
+      const status = !vault.installed
+        ? "available"
+        : vault.enabled
+          ? "installed, enabled"
+          : "installed, disabled";
+      return { kind: "print", lines: ["Additional packages:", `vault    ${status}`] };
+    }
     const pkg = resolveApp(parts[2] ?? "");
     if ((verb !== "install" && verb !== "uninstall") || !pkg || parts.length !== 3) {
-      return { kind: "print", lines: ["usage: apt install|uninstall <app>"] };
+      return { kind: "print", lines: ["usage: apt list", "       apt install|uninstall <app>"] };
     }
     const label = serviceLabel(pkg);
     const state = services[pkg];
     if (verb === "install") {
       if (state.installed) return { kind: "print", lines: [`${label} is already the newest version`] };
+      if (pkg === "vault") {
+        const free = (["files", "notes", "canvas", "calc", "quest"] as const).some((id) => !services[id].installed);
+        if (!free) {
+          return {
+            kind: "print",
+            lines: ["E: No space left on device.", "Uninstall an existing app, then apt install vault"],
+          };
+        }
+        return {
+          kind: "install",
+          id: pkg,
+          installed: true,
+          lines: ["installed: vault", "vault.service is disabled", "run: systemctl enable vault"],
+        };
+      }
       return { kind: "install", id: pkg, installed: true, lines: [`installed: ${label}`] };
     }
     if (!state.installed) return { kind: "print", lines: [`Package ${label} is not installed`] };

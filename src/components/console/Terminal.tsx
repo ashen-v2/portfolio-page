@@ -79,9 +79,20 @@ type TerminalProps = {
   onOpenTool: (id: ToolId) => void;
   onInstall: (id: keyof ServiceState, installed: boolean) => void;
   onPower: (id: keyof ServiceState, enabled: boolean) => void;
+  skipBoot: boolean;
+  onBooted: () => void;
 };
 
-export function Terminal({ content, services, onOpenArticle, onOpenTool, onInstall, onPower }: TerminalProps) {
+export function Terminal({
+  content,
+  services,
+  onOpenArticle,
+  onOpenTool,
+  onInstall,
+  onPower,
+  skipBoot,
+  onBooted,
+}: TerminalProps) {
   const inputId = useId();
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -106,14 +117,25 @@ export function Terminal({ content, services, onOpenArticle, onOpenTool, onInsta
     log.scrollTo(0, log.scrollHeight);
   }, [lines]);
 
+  const onBootedRef = useRef(onBooted);
+  onBootedRef.current = onBooted;
+
   useEffect(() => {
     const welcome = openingLines(content);
+    if (skipBoot) {
+      nextId.current = welcome.length + 1;
+      stickToTop.current = true;
+      setLines(welcome);
+      setBooting(false);
+      return;
+    }
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
       nextId.current = welcome.length + 1;
       stickToTop.current = true;
       setLines(welcome);
       setBooting(false);
+      onBootedRef.current();
       return;
     }
 
@@ -138,13 +160,14 @@ export function Terminal({ content, services, onOpenArticle, onOpenTool, onInsta
         stickToTop.current = true;
         setLines(welcome);
         setBooting(false);
+        onBootedRef.current();
       }, elapsed + 400),
     );
     return () => {
       cancelled = true;
       for (const timer of timers) window.clearTimeout(timer);
     };
-  }, [content]);
+  }, [content, skipBoot]);
 
   useEffect(() => {
     if (!booting) inputRef.current?.focus();
