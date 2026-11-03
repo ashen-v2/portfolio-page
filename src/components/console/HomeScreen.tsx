@@ -148,7 +148,7 @@ export function HomeScreen({
             disabled={!(services.vault.installed && services.vault.enabled)}
             onClick={() => onOpen("vault")}
           >
-            <img src={art("vault")} alt="" />
+            <img src={`${base}console/home/vault.png`} alt="" />
             <span>Vault</span>
           </button>
         </div>
