@@ -161,6 +161,7 @@ export function Console({
             citySrc={scene ? sectionScene[scene] : citySrc}
             caption={caption}
             credit={`© 2026 ${content?.profile.name ?? "Ashen Viduranga"}`}
+            onClose={home ? undefined : onHome}
           >
             {panel}
           </Viewport>
