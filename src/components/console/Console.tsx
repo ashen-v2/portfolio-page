@@ -12,6 +12,7 @@ import { Terminal } from "./Terminal";
 import { ToolDock } from "./ToolDock";
 import { Viewport } from "./Viewport";
 import { moduleTitle, sectionScene, toolTitle, type SectionId, type ToolId } from "./modules";
+import { freshServices, type ServiceApp, type ServiceState } from "./services";
 
 type PhoneLayout = "stage" | "stack";
 
@@ -58,6 +59,21 @@ export function Console({
 }: ConsoleProps) {
   const chosen = useRef(storedLayout() !== null);
   const [layout, setLayout] = useState<PhoneLayout>(storedLayout() ?? "stage");
+  const [services, setServices] = useState<ServiceState>(freshServices);
+
+  function installApp(id: ServiceApp, installed: boolean) {
+    setServices((current) => ({
+      ...current,
+      [id]: { installed, enabled: installed },
+    }));
+  }
+
+  function powerApp(id: ServiceApp, enabled: boolean) {
+    setServices((current) => {
+      if (!current[id].installed) return current;
+      return { ...current, [id]: { ...current[id], enabled } };
+    });
+  }
   const articleQuest = content?.quests.find((quest) => quest.id === articleId);
 
   useEffect(() => {
@@ -110,9 +126,18 @@ export function Console({
 
   let panel = null;
   if (tool === "terminal" && content) {
-    panel = <Terminal content={content} onOpenArticle={onOpenArticle} />;
+    panel = (
+      <Terminal
+        content={content}
+        services={services}
+        onOpenArticle={onOpenArticle}
+        onOpenTool={onOpenTool}
+        onInstall={installApp}
+        onPower={powerApp}
+      />
+    );
   } else if (tool === "files") {
-    panel = <Files onOpen={onSelect} />;
+    panel = <Files services={services} onOpen={onSelect} onOpenTool={onOpenTool} />;
   } else if (tool === "notes") {
     panel = <Notes />;
   } else if (tool === "canvas") {
@@ -122,7 +147,7 @@ export function Console({
   } else if (tool === "quest") {
     panel = <Quest content={content} />;
   } else if (home && content) {
-    panel = <HomeScreen handle={content.profile.handle} onOpen={onOpenTool} />;
+    panel = <HomeScreen handle={content.profile.handle} services={services} onOpen={onOpenTool} />;
   } else if (error) {
     panel = (
       <div className="panel" id="module-panel" role="alert">

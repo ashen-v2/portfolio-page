@@ -2,6 +2,8 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import type { SiteContent } from "../../data/content";
 import { runCommand } from "./commands";
+import type { ServiceState } from "./services";
+import type { ToolId } from "./modules";
 
 type Line = { id: number; kind: "boot" | "banner" | "cmd" | "trace" | "out"; text: string };
 
@@ -72,10 +74,14 @@ function lineClass(kind: Line["kind"]) {
 
 type TerminalProps = {
   content: SiteContent;
+  services: ServiceState;
   onOpenArticle: (id: string) => void;
+  onOpenTool: (id: ToolId) => void;
+  onInstall: (id: keyof ServiceState, installed: boolean) => void;
+  onPower: (id: keyof ServiceState, enabled: boolean) => void;
 };
 
-export function Terminal({ content, onOpenArticle }: TerminalProps) {
+export function Terminal({ content, services, onOpenArticle, onOpenTool, onInstall, onPower }: TerminalProps) {
   const inputId = useId();
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -158,7 +164,7 @@ export function Terminal({ content, onOpenArticle }: TerminalProps) {
     if (!trimmed) return;
 
     setHistory((current) => [...current, trimmed]);
-    const effect = runCommand(trimmed, content);
+    const effect = runCommand(trimmed, content, services);
     const commandLine: Line = {
       id: nextId.current++,
       kind: "cmd",
@@ -172,9 +178,17 @@ export function Terminal({ content, onOpenArticle }: TerminalProps) {
       onOpenArticle(effect.id);
       return;
     }
+    if (effect.kind === "tool") {
+      push([commandLine]);
+      onOpenTool(effect.id);
+      return;
+    }
+    if (effect.kind === "install") onInstall(effect.id, effect.installed);
+    if (effect.kind === "power") onPower(effect.id, effect.enabled);
+    const printed = effect.kind === "print" || effect.kind === "install" || effect.kind === "power" ? effect.lines : [];
     push([
       commandLine,
-      ...effect.lines.map((text) => ({ id: nextId.current++, kind: "out" as const, text })),
+      ...printed.map((text) => ({ id: nextId.current++, kind: "out" as const, text })),
     ]);
   }
 

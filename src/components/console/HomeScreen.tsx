@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { toolKeys, type ToolId } from "./modules";
+import type { ServiceApp, ServiceState } from "./services";
 
 const base = import.meta.env.BASE_URL;
 const city = `${base}console/city.png`;
@@ -8,7 +9,7 @@ function art(name: string) {
   return `${base}console/home/${name}.jpg`;
 }
 
-const tiles: { id: ToolId; tone: string }[] = [
+const tiles: { id: ServiceApp; tone: string }[] = [
   { id: "files", tone: "navy" },
   { id: "notes", tone: "navy" },
   { id: "canvas", tone: "purple" },
@@ -23,7 +24,19 @@ function tileLabel(id: ToolId) {
   return toolKeys.find((item) => item.id === id)?.label ?? id;
 }
 
-export function HomeScreen({ handle, onOpen }: { handle: string; onOpen: (id: ToolId) => void }) {
+function widgetClass(id: ServiceApp, services: ServiceState) {
+  return services[id].enabled ? "" : " home-widget-off";
+}
+
+export function HomeScreen({
+  handle,
+  services,
+  onOpen,
+}: {
+  handle: string;
+  services: ServiceState;
+  onOpen: (id: ToolId) => void;
+}) {
   const [clock, setClock] = useState(() => clockLabel(new Date()));
 
   useEffect(() => {
@@ -68,25 +81,35 @@ export function HomeScreen({ handle, onOpen }: { handle: string; onOpen: (id: To
           </time>
         </div>
       <div className="home-desk">
-        <div className="home-feature">
-          <p className="home-feature-title">Games</p>
-          <button type="button" className="home-quest" onClick={() => onOpen("quest")}>
-            <img src={art("quest")} alt="" />
-            <span>Quest</span>
-          </button>
-        </div>
-        <div className="home-tiles" role="toolbar" aria-label="Home apps">
-          {tiles.map((tile) => (
+        {services.quest.installed ? (
+          <div className={`home-feature${widgetClass("quest", services)}`}>
+            <p className="home-feature-title">Games</p>
             <button
-              key={tile.id}
               type="button"
-              className={`home-tile home-tile-${tile.id} home-tile-${tile.tone}`}
-              onClick={() => onOpen(tile.id)}
+              className="home-quest"
+              disabled={!services.quest.enabled}
+              onClick={() => onOpen("quest")}
             >
-              <img src={art(tile.id)} alt="" />
-              <span>{tileLabel(tile.id)}</span>
+              <img src={art("quest")} alt="" />
+              <span>Quest</span>
             </button>
-          ))}
+          </div>
+        ) : null}
+        <div className="home-tiles" role="toolbar" aria-label="Home apps">
+          {tiles.map((tile) =>
+            services[tile.id].installed ? (
+              <button
+                key={tile.id}
+                type="button"
+                className={`home-tile home-tile-${tile.id} home-tile-${tile.tone}${widgetClass(tile.id, services)}`}
+                disabled={!services[tile.id].enabled}
+                onClick={() => onOpen(tile.id)}
+              >
+                <img src={art(tile.id)} alt="" />
+                <span>{tileLabel(tile.id)}</span>
+              </button>
+            ) : null,
+          )}
         </div>
         <div className="home-side">
           <button type="button" className="home-terminal" onClick={() => onOpen("terminal")}>
