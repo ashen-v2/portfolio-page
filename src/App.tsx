@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Console } from "./components/console/Console";
-import type { SectionId } from "./components/console/modules";
+import type { SectionId, ToolId } from "./components/console/modules";
 import { loadContent, type SiteContent } from "./data/content";
 
 function readArticleId() {
@@ -20,7 +20,7 @@ export default function App() {
   const [articleId, setArticleId] = useState(initialArticle);
   const [section, setSection] = useState<SectionId | null>(initialArticle ? "projects" : null);
   const [scene, setScene] = useState<SectionId | null>(initialArticle ? "projects" : null);
-  const [terminalOpen, setTerminalOpen] = useState(false);
+  const [tool, setTool] = useState<ToolId | null>(null);
 
   useEffect(() => {
     loadContent()
@@ -35,7 +35,7 @@ export default function App() {
       const id = readArticleId();
       setArticleId(id);
       if (id) {
-        setTerminalOpen(false);
+        setTool(null);
         setSection("projects");
         setScene("projects");
       }
@@ -45,22 +45,31 @@ export default function App() {
   }, []);
 
   function selectSection(id: SectionId) {
-    setTerminalOpen(false);
+    setTool(null);
     setArticleId("");
     clearHash();
     setScene(id);
     setSection(section === id ? null : id);
   }
 
-  function toggleTerminal() {
+  function goHome() {
+    setTool(null);
     setArticleId("");
     clearHash();
     setSection(null);
-    setTerminalOpen((open) => !open);
+    setScene(null);
+  }
+
+  function openTool(id: ToolId) {
+    setArticleId("");
+    clearHash();
+    setSection(null);
+    setScene(null);
+    setTool(id);
   }
 
   function openArticle(id: string) {
-    setTerminalOpen(false);
+    setTool(null);
     setScene("projects");
     setSection("projects");
     setArticleId(id);
@@ -83,9 +92,10 @@ export default function App() {
         section={section}
         scene={scene}
         articleId={articleId}
-        terminalOpen={terminalOpen}
+        tool={tool}
         onSelect={selectSection}
-        onToggleTerminal={toggleTerminal}
+        onHome={goHome}
+        onOpenTool={openTool}
         onOpenArticle={openArticle}
         onCloseArticle={closeArticle}
       />

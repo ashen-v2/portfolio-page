@@ -1,7 +1,19 @@
 import type { ReactNode } from "react";
 import type { SectionId } from "./modules";
 
-export type PixelIconName = SectionId | "github" | "linkedin" | "mail" | "cv" | "terminal";
+export type PixelIconName =
+  | SectionId
+  | "github"
+  | "linkedin"
+  | "mail"
+  | "cv"
+  | "terminal"
+  | "home"
+  | "notes"
+  | "canvas"
+  | "calc"
+  | "files"
+  | "folder";
 
 function r(x: number, y: number, w: number, h: number, fill: string) {
   return <rect key={`${x}-${y}-${w}-${h}-${fill}`} x={x} y={y} width={w} height={h} fill={fill} />;
@@ -120,6 +132,70 @@ const icons: Record<PixelIconName, ReactNode> = {
       {r(3, 8, 3, 1, "#3d8f52")}
       {r(2, 11, 12, 2, "#6d7586")}
       {r(6, 13, 4, 2, "#3a414e")}
+    </>
+  ),
+  home: (
+    <>
+      {r(7, 1, 2, 2, "#e23b4a")}
+      {r(4, 3, 8, 2, "#e23b4a")}
+      {r(2, 5, 12, 2, "#c97820")}
+      {r(3, 7, 10, 7, "#ffe14a")}
+      {r(4, 8, 3, 3, "#7ad0ff")}
+      {r(9, 8, 3, 3, "#7ad0ff")}
+      {r(7, 10, 2, 4, "#8a5420")}
+    </>
+  ),
+  notes: (
+    <>
+      {r(3, 1, 10, 14, "#fff8e8")}
+      {r(3, 1, 2, 14, "#e23b4a")}
+      {r(6, 4, 5, 1, "#3d66e6")}
+      {r(6, 6, 5, 1, "#3d66e6")}
+      {r(6, 8, 5, 1, "#3d66e6")}
+      {r(6, 10, 4, 1, "#3d66e6")}
+      {r(6, 12, 3, 1, "#3d66e6")}
+    </>
+  ),
+  canvas: (
+    <>
+      {r(1, 2, 12, 10, "#fff8e8")}
+      {r(1, 2, 12, 2, "#3d66e6")}
+      {r(2, 5, 4, 3, "#7ad0ff")}
+      {r(7, 6, 4, 3, "#2fbe4a")}
+      {r(4, 8, 3, 2, "#ffe14a")}
+      {r(11, 10, 4, 2, "#c97820")}
+      {r(13, 8, 2, 4, "#e23b4a")}
+    </>
+  ),
+  files: (
+    <>
+      {r(2, 3, 8, 2, "#e2b423")}
+      {r(2, 5, 12, 8, "#ffe14a")}
+      {r(4, 7, 8, 1, "#fff8e8")}
+      {r(4, 9, 6, 1, "#fff8e8")}
+      {r(3, 11, 10, 1, "#e2b423")}
+    </>
+  ),
+  folder: (
+    <>
+      {r(1, 3, 6, 2, "#e2b423")}
+      {r(1, 5, 14, 8, "#ffe14a")}
+      {r(2, 6, 12, 1, "#fff6b0")}
+      {r(1, 11, 14, 2, "#c99216")}
+    </>
+  ),
+  calc: (
+    <>
+      {r(2, 1, 12, 14, "#2a3548")}
+      {r(3, 2, 10, 3, "#14301c")}
+      {r(4, 3, 6, 1, "#7cff6b")}
+      {r(4, 7, 2, 2, "#d7ecff")}
+      {r(7, 7, 2, 2, "#d7ecff")}
+      {r(10, 7, 2, 2, "#ffe14a")}
+      {r(4, 10, 2, 2, "#d7ecff")}
+      {r(7, 10, 2, 2, "#d7ecff")}
+      {r(10, 10, 2, 2, "#ffe14a")}
+      {r(4, 13, 8, 1, "#d7ecff")}
     </>
   ),
   work: (
