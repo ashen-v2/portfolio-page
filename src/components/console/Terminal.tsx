@@ -2,8 +2,10 @@ import { useEffect, useId, useRef, useState } from "react";
 import type { FormEvent, KeyboardEvent } from "react";
 import type { SiteContent } from "../../data/content";
 import { runCommand } from "./commands";
+import type { ServiceState } from "./services";
+import type { ToolId } from "./modules";
 
-type Line = { id: number; kind: "boot" | "banner" | "cmd" | "trace" | "out"; text: string };
+type Line = { id: number; kind: "boot" | "banner" | "cmd" | "trace" | "out" | "mark"; text: string };
 
 type Beat = { kind: "trace" | "out"; text: string; pause: number };
 
@@ -66,16 +68,32 @@ function openingLines(content: SiteContent): Line[] {
 function lineClass(kind: Line["kind"]) {
   if (kind === "banner") return "terminal-banner";
   if (kind === "trace") return "terminal-trace";
+  if (kind === "mark") return "terminal-mark";
   if (kind === "out") return "terminal-out";
   return "terminal-cmd";
 }
 
 type TerminalProps = {
   content: SiteContent;
+  services: ServiceState;
   onOpenArticle: (id: string) => void;
+  onOpenTool: (id: ToolId) => void;
+  onInstall: (id: keyof ServiceState, installed: boolean) => void;
+  onPower: (id: keyof ServiceState, enabled: boolean) => void;
+  skipBoot: boolean;
+  onBooted: () => void;
 };
 
-export function Terminal({ content, onOpenArticle }: TerminalProps) {
+export function Terminal({
+  content,
+  services,
+  onOpenArticle,
+  onOpenTool,
+  onInstall,
+  onPower,
+  skipBoot,
+  onBooted,
+}: TerminalProps) {
   const inputId = useId();
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -100,14 +118,25 @@ export function Terminal({ content, onOpenArticle }: TerminalProps) {
     log.scrollTo(0, log.scrollHeight);
   }, [lines]);
 
+  const onBootedRef = useRef(onBooted);
+  onBootedRef.current = onBooted;
+
   useEffect(() => {
     const welcome = openingLines(content);
+    if (skipBoot) {
+      nextId.current = welcome.length + 1;
+      stickToTop.current = true;
+      setLines(welcome);
+      setBooting(false);
+      return;
+    }
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (reduce) {
       nextId.current = welcome.length + 1;
       stickToTop.current = true;
       setLines(welcome);
       setBooting(false);
+      onBootedRef.current();
       return;
     }
 
@@ -132,13 +161,14 @@ export function Terminal({ content, onOpenArticle }: TerminalProps) {
         stickToTop.current = true;
         setLines(welcome);
         setBooting(false);
+        onBootedRef.current();
       }, elapsed + 400),
     );
     return () => {
       cancelled = true;
       for (const timer of timers) window.clearTimeout(timer);
     };
-  }, [content]);
+  }, [content, skipBoot]);
 
   useEffect(() => {
     if (!booting) inputRef.current?.focus();
@@ -158,7 +188,7 @@ export function Terminal({ content, onOpenArticle }: TerminalProps) {
     if (!trimmed) return;
 
     setHistory((current) => [...current, trimmed]);
-    const effect = runCommand(trimmed, content);
+    const effect = runCommand(trimmed, content, services);
     const commandLine: Line = {
       id: nextId.current++,
       kind: "cmd",
@@ -172,9 +202,21 @@ export function Terminal({ content, onOpenArticle }: TerminalProps) {
       onOpenArticle(effect.id);
       return;
     }
+    if (effect.kind === "tool") {
+      push([commandLine]);
+      onOpenTool(effect.id);
+      return;
+    }
+    if (effect.kind === "install") onInstall(effect.id, effect.installed);
+    if (effect.kind === "power") onPower(effect.id, effect.enabled);
+    const printed = effect.kind === "print" || effect.kind === "install" || effect.kind === "power" ? effect.lines : [];
     push([
       commandLine,
-      ...effect.lines.map((text) => ({ id: nextId.current++, kind: "out" as const, text })),
+      ...printed.map((text) => ({
+        id: nextId.current++,
+        kind: (text === "apt list     extra packages" ? "mark" : "out") as "mark" | "out",
+        text,
+      })),
     ]);
   }
 

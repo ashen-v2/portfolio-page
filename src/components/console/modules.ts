@@ -16,6 +16,7 @@ export const toolKeys = [
   { id: "canvas", label: "Canvas", title: "CANVAS" },
   { id: "calc", label: "Calculator", title: "CALCULATOR" },
   { id: "quest", label: "Quest", title: "QUEST" },
+  { id: "vault", label: "Vault", title: "VAULT" },
 ] as const;
 
 export type ToolId = (typeof toolKeys)[number]["id"];

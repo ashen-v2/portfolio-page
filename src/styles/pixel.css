@@ -1678,6 +1678,7 @@ a {
 }
 
 .terminal-log p.terminal-out,
+.terminal-log p.terminal-mark,
 .terminal-log p.terminal-trace {
   font-family: "Courier New", ui-monospace, monospace;
   white-space: pre-wrap;
@@ -1686,6 +1687,10 @@ a {
 
 .terminal-out {
   color: #7cff6b;
+}
+
+.terminal-mark {
+  color: #ffe86b;
 }
 
 .terminal-trace {
@@ -1916,6 +1921,124 @@ a {
   height: 28px;
   flex: none;
   shape-rendering: crispEdges;
+}
+
+.files-window {
+  position: relative;
+}
+
+.files-back,
+.files-deny button {
+  align-self: flex-start;
+  margin: 0 0 8px;
+  padding: 4px 10px;
+  border: 2px solid #1c2744;
+  background: linear-gradient(#f7f8fb, #c5cbd6);
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.files-browser,
+.files-viewer {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+  padding: 8px;
+}
+
+.files-photos {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow: auto;
+}
+
+.files-photo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 4px;
+  border: 2px solid #1c2744;
+  background: #fff8ec;
+  color: var(--ink);
+  font-family: var(--font-display);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.files-photo img {
+  width: 100%;
+  height: 64px;
+  object-fit: cover;
+  image-rendering: pixelated;
+}
+
+.files-viewer img {
+  width: 100%;
+  min-height: 0;
+  flex: 1;
+  object-fit: contain;
+  background: #10204a;
+  image-rendering: auto;
+}
+
+.files-bin {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 8px;
+  border: 2px solid #1c2744;
+  background: #07140c;
+  color: #7cff6b;
+  font-family: "Courier New", ui-monospace, monospace;
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.files-refusal {
+  margin: 0 0 8px;
+  color: #e23b4a;
+  font-family: var(--font-display);
+}
+
+.files-deny {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  gap: 10px;
+  width: min(240px, 80%);
+  padding: 14px;
+  transform: translate(-50%, -50%);
+  border: 4px solid #1c2744;
+  background: #fff8ec;
+  box-shadow: inset 0 0 0 3px #e23b4a, 5px 5px 0 rgba(36, 10, 72, 0.42);
+  color: var(--ink);
+  font-family: var(--font-display);
+  text-align: center;
+}
+
+.files-deny p {
+  margin: 0;
+}
+
+.home-widget-off {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+
+.home-widget-off,
+.home-widget-off button {
+  pointer-events: none;
 }
 
 .notes-tool {
@@ -2235,8 +2358,15 @@ a {
   text-shadow: 2px 2px 0 #12082e;
 }
 
+.desk[data-layout="stage"] .home-feature {
+  align-self: end;
+  height: 108%;
+  gap: 4px;
+}
+
 .desk[data-layout="stage"] .home-feature-title {
   font-size: 34px;
+  line-height: 1;
 }
 
 .desk[data-layout="stage"] .home-tiles {
@@ -2244,10 +2374,18 @@ a {
   grid-template-rows: minmax(0, 0.86fr) minmax(0, 1fr);
 }
 
-.desk[data-layout="stage"] .home-tile-files,
-.desk[data-layout="stage"] .home-tile-calc {
+.desk[data-layout="stage"] .home-tile-files {
   aspect-ratio: 1;
   width: 84%;
+  height: auto;
+  max-height: 100%;
+  justify-self: center;
+  align-self: center;
+}
+
+.desk[data-layout="stage"] .home-tile-calc {
+  aspect-ratio: 1;
+  width: 66%;
   height: auto;
   max-height: 100%;
   justify-self: center;
@@ -2357,9 +2495,9 @@ a {
 
 .home-side {
   display: grid;
-  grid-template-rows: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(0, 1fr) auto auto;
   align-content: stretch;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
   min-height: 0;
 }
@@ -2421,7 +2559,42 @@ a {
 
 .desk[data-layout="stack"] .home-side {
   grid-template-columns: minmax(0, 1fr);
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
+  align-content: stretch;
+}
+
+.home-vault {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  min-height: 54px;
+  margin: 0;
+  padding: 0 0 4px 8px;
+  overflow: hidden;
+  border: 2px solid rgba(190, 210, 255, 0.28);
+  border-radius: 10px;
+  background: #1c2433;
+  color: #fff8e8;
+  font-family: var(--font-display);
+  font-size: 14px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.home-vault img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.home-vault span {
+  position: relative;
+  z-index: 1;
+  text-shadow: 1px 1px 0 #0c1018;
 }
 
 .home-terminal:hover,
