@@ -112,8 +112,8 @@ export function Console({
     panel = <Calculator />;
   } else if (tool === "quest") {
     panel = <Quest />;
-  } else if (home) {
-    panel = <HomeScreen onOpen={onOpenTool} />;
+  } else if (home && content) {
+    panel = <HomeScreen handle={content.profile.handle} onOpen={onOpenTool} />;
   } else if (error) {
     panel = (
       <div className="panel" id="module-panel" role="alert">
