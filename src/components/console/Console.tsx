@@ -71,8 +71,26 @@ export function Console({
 
   useEffect(() => {
     if (chosen.current) return;
+    if (window.matchMedia("(min-width: 1101px)").matches) return;
     setLayout(content?.["default mobile view"] === true ? "stack" : "stage");
   }, [content]);
+
+  useEffect(() => {
+    const wide = window.matchMedia("(min-width: 1101px)");
+    function useConsoleLayout() {
+      if (!wide.matches) return;
+      setLayout("stage");
+      chosen.current = true;
+      try {
+        localStorage.setItem("console-layout", "stage");
+      } catch {
+        /* keep the choice for this visit */
+      }
+    }
+    useConsoleLayout();
+    wide.addEventListener("change", useConsoleLayout);
+    return () => wide.removeEventListener("change", useConsoleLayout);
+  }, []);
 
   function toggleLayout() {
     setLayout((current) => {

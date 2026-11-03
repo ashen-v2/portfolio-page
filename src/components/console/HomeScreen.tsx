@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { toolKeys, type ToolId } from "./modules";
 
 const base = import.meta.env.BASE_URL;
+const city = `${base}console/city.png`;
 
 function art(name: string) {
   return `${base}console/home/${name}.jpg`;
@@ -14,12 +15,6 @@ const tiles: { id: ToolId; tone: string }[] = [
   { id: "calc", tone: "teal" },
 ];
 
-const scriptSeed = [
-  { id: "compilation", label: "compilation", on: true },
-  { id: "launch_server", label: "launch_server", on: true },
-  { id: "update_package", label: "update_package", on: false },
-];
-
 function clockLabel(date: Date) {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
@@ -30,22 +25,15 @@ function tileLabel(id: ToolId) {
 
 export function HomeScreen({ handle, onOpen }: { handle: string; onOpen: (id: ToolId) => void }) {
   const [clock, setClock] = useState(() => clockLabel(new Date()));
-  const [scripts, setScripts] = useState(scriptSeed);
 
   useEffect(() => {
     const id = window.setInterval(() => setClock(clockLabel(new Date())), 1000);
     return () => window.clearInterval(id);
   }, []);
 
-  function toggleScript(id: string) {
-    setScripts((current) => current.map((item) => (item.id === id ? { ...item, on: !item.on } : item)));
-  }
-
   return (
-    <div className="home-screen" id="home-screen" style={{ backgroundImage: `url("${art("neon")}")` }}>
-      <div className="home-board">
-      <div className="home-desk">
-        <div className="home-status">
+    <div className="home-screen" id="home-screen" style={{ backgroundImage: `url("${city}")` }}>
+      <div className="home-status">
           <svg className="home-mark" viewBox="0 0 16 16" aria-hidden="true">
             <rect x="1" y="5" width="14" height="7" rx="2" fill="#d7e8ff" />
             <rect x="3" y="7" width="4" height="1" fill="#1a2140" />
@@ -79,8 +67,9 @@ export function HomeScreen({ handle, onOpen }: { handle: string; onOpen: (id: To
             {clock}
           </time>
         </div>
+      <div className="home-desk">
         <div className="home-feature">
-          <p className="home-feature-title">Quest</p>
+          <p className="home-feature-title">Games</p>
           <button type="button" className="home-quest" onClick={() => onOpen("quest")}>
             <img src={art("quest")} alt="" />
             <span>Quest</span>
@@ -91,7 +80,7 @@ export function HomeScreen({ handle, onOpen }: { handle: string; onOpen: (id: To
             <button
               key={tile.id}
               type="button"
-              className={`home-tile home-tile-${tile.tone}`}
+              className={`home-tile home-tile-${tile.id} home-tile-${tile.tone}`}
               onClick={() => onOpen(tile.id)}
             >
               <img src={art(tile.id)} alt="" />
@@ -132,23 +121,7 @@ export function HomeScreen({ handle, onOpen }: { handle: string; onOpen: (id: To
               <strong>ONLINE</strong>
             </p>
           </section>
-          <section className="home-scripts" aria-label="Scripts">
-            <h3>Scripts</h3>
-            {scripts.map((item) => (
-              <button
-                key={item.id}
-                type="button"
-                className="home-script"
-                aria-pressed={item.on}
-                onClick={() => toggleScript(item.id)}
-              >
-                <span className="home-check" aria-hidden="true" />
-                {item.label}
-              </button>
-            ))}
-          </section>
         </div>
-      </div>
       </div>
     </div>
   );

@@ -1128,6 +1128,28 @@ a {
   cursor: not-allowed;
 }
 
+.console-key-home {
+  border-color: #e090ff;
+  background: linear-gradient(#fff4fc, #f0c6ff);
+  box-shadow:
+    inset 0 1px 0 #fff,
+    0 3px 0 #c026ff,
+    0 0 0 2px #e090ff,
+    0 0 10px rgba(192, 38, 255, 0.8);
+}
+
+.console-key-home:hover:not(:disabled) {
+  background: linear-gradient(#fff, #f6d8ff);
+}
+
+.console-key-home[aria-pressed="true"] {
+  background: linear-gradient(#f3d4ff, #d56bff);
+  box-shadow:
+    inset 0 3px 0 #9a18e8,
+    0 0 0 2px #ffe14a,
+    0 0 12px rgba(192, 38, 255, 0.9);
+}
+
 .key-icon {
   width: 22px;
   height: 22px;
@@ -1684,25 +1706,14 @@ a {
   padding: 0;
   overflow: hidden;
   pointer-events: none;
-  background-color: #140820;
+  background-color: #79c8f2;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
 }
 
-.screen-view:has(.home-board) .city-caption {
+.screen-view:has(.home-desk) .city-caption {
   display: none;
-}
-
-.home-board {
-  pointer-events: auto;
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 943px;
-  height: 511px;
-  transform: translate(-50%, -50%) scale(min(100cqw / 943px, 100cqh / 511px));
-  transform-origin: center center;
 }
 
 .home-apps {
@@ -2058,29 +2069,42 @@ a {
   }
 }
 
-.home-desk {
-  display: grid;
-  grid-template-columns: 200px 232px 168px;
-  grid-template-rows: auto auto;
-  align-content: center;
-  justify-content: center;
-  align-items: start;
-  gap: 12px 16px;
-  width: 100%;
-  height: 100%;
-  min-height: 0;
-  padding: 14px 18px;
-  color: #eef4ff;
-}
-
 .home-status {
-  grid-column: 1 / -1;
+  position: absolute;
+  top: 6px;
+  left: 12px;
+  right: 12px;
+  z-index: 2;
   display: flex;
   align-items: center;
   gap: 8px;
   min-width: 0;
   font-family: var(--font-display);
   font-size: 13px;
+  color: #fff;
+  text-shadow: 1px 1px 0 #0c1c58;
+}
+
+.home-desk {
+  pointer-events: auto;
+  position: absolute;
+  display: grid;
+  min-height: 0;
+  color: #eef4ff;
+}
+
+.desk[data-layout="stage"] .home-desk {
+  top: auto;
+  right: auto;
+  bottom: 12px;
+  left: 50%;
+  width: min(calc(100cqw - 24px), calc((100cqh - 48px) * 2.5));
+  aspect-ratio: 2.5 / 1;
+  transform: translateX(-50%);
+  grid-template-columns: minmax(0, 200fr) minmax(0, 232fr) minmax(0, 168fr);
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 3% 2.4%;
 }
 
 .home-mark {
@@ -2130,22 +2154,50 @@ a {
   flex-direction: column;
   align-items: stretch;
   gap: 6px;
-  width: 200px;
+  min-width: 0;
+  min-height: 0;
 }
 
 .home-feature-title {
   margin: 0;
   color: #fff;
   font-family: var(--font-display);
-  font-size: 20px;
+  font-size: 22px;
   font-weight: 600;
   text-shadow: 2px 2px 0 #12082e;
 }
 
+.desk[data-layout="stage"] .home-feature-title {
+  font-size: 34px;
+}
+
+.desk[data-layout="stage"] .home-tiles {
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  grid-template-rows: minmax(0, 0.86fr) minmax(0, 1fr);
+}
+
+.desk[data-layout="stage"] .home-tile-files,
+.desk[data-layout="stage"] .home-tile-calc {
+  aspect-ratio: 1;
+  width: 84%;
+  height: auto;
+  max-height: 100%;
+  justify-self: center;
+  align-self: center;
+}
+
+.desk[data-layout="stage"] .home-tile-notes,
+.desk[data-layout="stage"] .home-tile-canvas {
+  width: 100%;
+  height: 62%;
+  align-self: center;
+}
+
 .home-quest {
   position: relative;
-  width: 200px;
-  height: 220px;
+  flex: 1;
+  width: 100%;
+  min-height: 0;
   padding: 0;
   overflow: hidden;
   border: 3px solid #e7b6ff;
@@ -2181,15 +2233,19 @@ a {
 
 .home-tiles {
   display: grid;
-  grid-template-columns: 108px 108px;
-  grid-template-rows: 108px 108px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px 16px;
+  min-width: 0;
+  min-height: 0;
 }
 
 .home-tile {
   position: relative;
-  width: 108px;
-  height: 108px;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
   padding: 0;
   overflow: hidden;
   border: 2px solid rgba(255, 255, 255, 0.16);
@@ -2233,10 +2289,11 @@ a {
 
 .home-side {
   display: grid;
-  grid-template-rows: auto auto auto;
-  align-content: start;
+  grid-template-rows: minmax(0, 1fr) auto;
+  align-content: stretch;
   gap: 8px;
-  width: 168px;
+  min-width: 0;
+  min-height: 0;
 }
 
 .home-terminal,
@@ -2255,9 +2312,41 @@ a {
   flex-direction: column;
   align-items: stretch;
   gap: 4px;
+  min-height: 0;
   padding: 8px;
   text-align: left;
   cursor: pointer;
+}
+
+.desk[data-layout="stack"] .home-desk {
+  top: 36px;
+  right: 10px;
+  bottom: 8px;
+  left: 10px;
+  width: auto;
+  height: auto;
+  aspect-ratio: auto;
+  transform: none;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1.15fr) auto;
+  gap: 8px;
+}
+
+.desk[data-layout="stack"] .home-term-screen {
+  flex: none;
+  height: 52px;
+  min-height: 0;
+}
+
+.desk[data-layout="stack"] .home-feature,
+.desk[data-layout="stack"] .home-tiles,
+.desk[data-layout="stack"] .home-side {
+  grid-column: 1 / -1;
+}
+
+.desk[data-layout="stack"] .home-side {
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto auto;
 }
 
 .home-terminal:hover,
@@ -2284,9 +2373,10 @@ a {
 
 .home-term-screen {
   display: flex;
+  flex: 1;
   flex-direction: column;
   gap: 3px;
-  height: 72px;
+  min-height: 48px;
   padding: 6px;
   border-radius: 6px;
   background: #10203a;
