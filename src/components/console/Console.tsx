@@ -1,11 +1,16 @@
 import { useEffect, useRef, useState } from "react";
 import type { SiteContent } from "../../data/content";
+import { Calculator } from "./Calculator";
+import { CanvasPad } from "./CanvasPad";
+import { Files } from "./Files";
+import { HomeScreen } from "./HomeScreen";
+import { Notes } from "./Notes";
 import { SectionPanel } from "./SectionPanel";
 import { SideColumn } from "./SideColumn";
 import { Terminal } from "./Terminal";
 import { ToolDock } from "./ToolDock";
 import { Viewport } from "./Viewport";
-import { moduleTitle, type SectionId } from "./modules";
+import { moduleTitle, toolTitle, type SectionId, type ToolId } from "./modules";
 
 type PhoneLayout = "stage" | "stack";
 
@@ -38,9 +43,10 @@ type ConsoleProps = {
   section: SectionId | null;
   scene: SectionId | null;
   articleId: string;
-  terminalOpen: boolean;
+  tool: ToolId | null;
   onSelect: (id: SectionId) => void;
-  onToggleTerminal: () => void;
+  onHome: () => void;
+  onOpenTool: (id: ToolId) => void;
   onOpenArticle: (id: string) => void;
   onCloseArticle: () => void;
 };
@@ -51,9 +57,10 @@ export function Console({
   section,
   scene,
   articleId,
-  terminalOpen,
+  tool,
   onSelect,
-  onToggleTerminal,
+  onHome,
+  onOpenTool,
   onOpenArticle,
   onCloseArticle,
 }: ConsoleProps) {
@@ -78,19 +85,32 @@ export function Console({
       return next;
     });
   }
-  const title = terminalOpen
-    ? "TERMINAL"
-    : section === "projects" && articleId
-      ? (articleQuest?.title ?? "PROJECTS").toUpperCase()
-      : moduleTitle(section);
+  const home = !tool && !section && !scene && !error && Boolean(content);
+  const title = tool
+    ? toolTitle(tool)
+    : home
+      ? "HOME"
+      : section === "projects" && articleId
+        ? (articleQuest?.title ?? "PROJECTS").toUpperCase()
+        : moduleTitle(section);
   const caption =
-    terminalOpen || section || error || !content
+    tool || section || error || !content
       ? ""
       : `${content.profile.name} · ${content.profile.tagline}`;
 
   let panel = null;
-  if (terminalOpen && content) {
+  if (tool === "terminal" && content) {
     panel = <Terminal content={content} onOpenArticle={onOpenArticle} />;
+  } else if (tool === "files") {
+    panel = <Files onOpen={onSelect} />;
+  } else if (tool === "notes") {
+    panel = <Notes />;
+  } else if (tool === "canvas") {
+    panel = <CanvasPad />;
+  } else if (tool === "calc") {
+    panel = <Calculator />;
+  } else if (home) {
+    panel = <HomeScreen onOpen={onOpenTool} />;
   } else if (error) {
     panel = (
       <div className="panel" id="module-panel" role="alert">
@@ -140,10 +160,10 @@ export function Console({
           />
           <ToolDock
             section={section}
-            terminalOpen={terminalOpen}
+            homeActive={home}
             enabled={Boolean(content)}
             onSelect={onSelect}
-            onToggleTerminal={onToggleTerminal}
+            onHome={onHome}
           />
         </div>
       </div>

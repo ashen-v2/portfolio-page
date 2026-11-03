@@ -3,13 +3,13 @@ import { PixelIcon } from "./pixelIcons";
 
 type ToolDockProps = {
   section: SectionId | null;
-  terminalOpen: boolean;
+  homeActive: boolean;
   enabled: boolean;
   onSelect: (id: SectionId) => void;
-  onToggleTerminal: () => void;
+  onHome: () => void;
 };
 
-export function ToolDock({ section, terminalOpen, enabled, onSelect, onToggleTerminal }: ToolDockProps) {
+export function ToolDock({ section, homeActive, enabled, onSelect, onHome }: ToolDockProps) {
   return (
     <div className="dock">
       <div className="keys" role="toolbar" aria-label="Portfolio modules">
@@ -30,13 +30,13 @@ export function ToolDock({ section, terminalOpen, enabled, onSelect, onToggleTer
         <button
           type="button"
           className="console-key"
-          aria-pressed={terminalOpen}
-          aria-controls="terminal"
+          aria-pressed={homeActive}
+          aria-controls="home-screen"
           disabled={!enabled}
-          onClick={onToggleTerminal}
+          onClick={onHome}
         >
-          <PixelIcon className="key-icon" name="terminal" />
-          <span>Terminal</span>
+          <PixelIcon className="key-icon" name="home" />
+          <span>Home</span>
         </button>
       </div>
     </div>
