@@ -92,11 +92,9 @@ export function HomeScreen({ handle, onOpen }: { handle: string; onOpen: (id: To
           <button type="button" className="home-terminal" onClick={() => onOpen("terminal")}>
             <span className="home-side-title">Terminal</span>
             <span className="home-term-screen" aria-hidden="true">
-              <span className="home-term-prompt">&gt;_</span>
               <span className="home-term-line">{(handle || "ashen").toLowerCase()}@portfolio:~$</span>
-              <span className="home-term-bar home-term-bar-a" />
-              <span className="home-term-bar home-term-bar-b" />
-              <span className="home-term-bar home-term-bar-c" />
+              <span className="home-term-line">help</span>
+              <span className="home-term-cursor">█</span>
             </span>
           </button>
           <section className="home-system" aria-label="System">

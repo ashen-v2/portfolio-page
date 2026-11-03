@@ -1128,26 +1128,55 @@ a {
   cursor: not-allowed;
 }
 
-.console-key-home {
-  border-color: #e090ff;
-  background: linear-gradient(#fff4fc, #f0c6ff);
+.console-key-home,
+.console-key-home:hover:not(:disabled),
+.console-key-home[aria-pressed="true"] {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  border-color: #7a2cc4;
+  background: #05060c;
   box-shadow:
-    inset 0 1px 0 #fff,
-    0 3px 0 #c026ff,
-    0 0 0 2px #e090ff,
-    0 0 10px rgba(192, 38, 255, 0.8);
+    inset 0 0 0 1px #1a2140,
+    0 3px 0 #3a1868,
+    0 0 0 2px #7a2cc4,
+    0 0 10px rgba(122, 44, 196, 0.9);
 }
 
-.console-key-home:hover:not(:disabled) {
-  background: linear-gradient(#fff, #f6d8ff);
+.console-key-home::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 14% 22%, #fff 1.1px, transparent 1.6px),
+    radial-gradient(circle at 31% 68%, #fff 0.9px, transparent 1.4px),
+    radial-gradient(circle at 46% 30%, #d7e8ff 1px, transparent 1.5px),
+    radial-gradient(circle at 58% 78%, #fff 0.8px, transparent 1.3px),
+    radial-gradient(circle at 72% 18%, #fff 1.1px, transparent 1.6px),
+    radial-gradient(circle at 84% 52%, #fff 0.9px, transparent 1.4px),
+    radial-gradient(circle at 24% 44%, #fff 0.8px, transparent 1.3px),
+    radial-gradient(circle at 63% 46%, #d7e8ff 0.9px, transparent 1.4px),
+    radial-gradient(circle at 38% 86%, #fff 1px, transparent 1.5px),
+    radial-gradient(circle at 88% 82%, #fff 0.8px, transparent 1.3px);
+}
+
+.console-key-home > * {
+  position: relative;
+  z-index: 1;
+}
+
+.console-key-home span {
+  color: #fff;
+  text-shadow: 1px 1px 0 #000;
 }
 
 .console-key-home[aria-pressed="true"] {
-  background: linear-gradient(#f3d4ff, #d56bff);
+  transform: translateY(2px);
   box-shadow:
-    inset 0 3px 0 #9a18e8,
-    0 0 0 2px #ffe14a,
-    0 0 12px rgba(192, 38, 255, 0.9);
+    inset 0 3px 0 #000,
+    0 0 0 2px #e7b6ff,
+    0 0 12px rgba(122, 44, 196, 0.95);
 }
 
 .key-icon {
@@ -2313,9 +2342,16 @@ a {
   align-items: stretch;
   gap: 4px;
   min-height: 0;
-  padding: 8px;
+  padding: 6px;
   text-align: left;
   cursor: pointer;
+  border: 4px solid #1c2744;
+  border-radius: 2px;
+  background: #14301c;
+  box-shadow:
+    inset 0 0 0 3px #2f6b3a,
+    4px 4px 0 rgba(12, 28, 88, 0.35);
+  color: #7cff6b;
 }
 
 .desk[data-layout="stack"] .home-desk {
@@ -2366,6 +2402,13 @@ a {
   font-weight: 600;
 }
 
+.home-terminal .home-side-title {
+  color: #c6ffb0;
+  font-family: var(--font-display);
+  text-align: center;
+  text-shadow: 2px 2px 0 #07140c;
+}
+
 .home-system h3,
 .home-scripts h3 {
   margin-bottom: 4px;
@@ -2375,23 +2418,28 @@ a {
   display: flex;
   flex: 1;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
   min-height: 48px;
   padding: 6px;
-  border-radius: 6px;
-  background: #10203a;
+  border-radius: 0;
+  border: 3px solid #0c1c58;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      rgba(124, 255, 107, 0.07) 0 1px,
+      transparent 1px 3px
+    ),
+    #07140c;
+  box-shadow: inset 0 0 0 2px #1d5a32;
   overflow: hidden;
 }
 
-.home-term-prompt {
-  color: #d7ecff;
-  font-size: 16px;
-}
-
-.home-term-line {
-  color: #7cffb2;
+.home-term-line,
+.home-term-cursor {
+  color: #7cff6b;
   font-family: "Courier New", ui-monospace, monospace;
-  font-size: 11px;
+  font-size: 12px;
+  line-height: 1.2;
 }
 
 .home-term-bar {
