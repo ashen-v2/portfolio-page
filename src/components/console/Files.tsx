@@ -53,19 +53,19 @@ export function Files({ services, onOpen, onOpenTool }: FilesProps) {
     <ul className="files-list">
       <li>
         <button type="button" className="files-folder" onClick={() => setDenied(true)}>
-          <PixelIcon className="files-folder-icon" name="folder" />
+          <PixelIcon className="files-folder-icon" name="folderBlue" />
           <span>system_files</span>
         </button>
       </li>
       <li>
         <button type="button" className="files-folder" onClick={() => setFolder("images")}>
-          <PixelIcon className="files-folder-icon" name="folder" />
+          <PixelIcon className="files-folder-icon" name="folderBlue" />
           <span>images</span>
         </button>
       </li>
       <li>
         <button type="button" className="files-folder" onClick={() => setFolder("apps")}>
-          <PixelIcon className="files-folder-icon" name="folder" />
+          <PixelIcon className="files-folder-icon" name="folderBlue" />
           <span>installed_apps</span>
         </button>
       </li>

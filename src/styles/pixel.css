@@ -1678,6 +1678,7 @@ a {
 }
 
 .terminal-log p.terminal-out,
+.terminal-log p.terminal-mark,
 .terminal-log p.terminal-trace {
   font-family: "Courier New", ui-monospace, monospace;
   white-space: pre-wrap;
@@ -1686,6 +1687,10 @@ a {
 
 .terminal-out {
   color: #7cff6b;
+}
+
+.terminal-mark {
+  color: #ffe86b;
 }
 
 .terminal-trace {

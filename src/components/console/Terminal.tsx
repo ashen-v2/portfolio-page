@@ -5,7 +5,7 @@ import { runCommand } from "./commands";
 import type { ServiceState } from "./services";
 import type { ToolId } from "./modules";
 
-type Line = { id: number; kind: "boot" | "banner" | "cmd" | "trace" | "out"; text: string };
+type Line = { id: number; kind: "boot" | "banner" | "cmd" | "trace" | "out" | "mark"; text: string };
 
 type Beat = { kind: "trace" | "out"; text: string; pause: number };
 
@@ -68,6 +68,7 @@ function openingLines(content: SiteContent): Line[] {
 function lineClass(kind: Line["kind"]) {
   if (kind === "banner") return "terminal-banner";
   if (kind === "trace") return "terminal-trace";
+  if (kind === "mark") return "terminal-mark";
   if (kind === "out") return "terminal-out";
   return "terminal-cmd";
 }
@@ -211,7 +212,11 @@ export function Terminal({
     const printed = effect.kind === "print" || effect.kind === "install" || effect.kind === "power" ? effect.lines : [];
     push([
       commandLine,
-      ...printed.map((text) => ({ id: nextId.current++, kind: "out" as const, text })),
+      ...printed.map((text) => ({
+        id: nextId.current++,
+        kind: (text === "apt list     extra packages" ? "mark" : "out") as "mark" | "out",
+        text,
+      })),
     ]);
   }
 

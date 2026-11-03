@@ -108,11 +108,11 @@ export function runCommand(raw: string, content: SiteContent, services: ServiceS
     if (verb === "list" && parts.length === 2) {
       const vault = services.vault;
       const status = !vault.installed
-        ? "available"
+        ? "available to install"
         : vault.enabled
           ? "installed, enabled"
           : "installed, disabled";
-      return { kind: "print", lines: ["Additional packages:", `vault    ${status}`] };
+      return { kind: "print", lines: ["additional packages available for installation", `vault    ${status}`] };
     }
     const pkg = resolveApp(parts[2] ?? "");
     if ((verb !== "install" && verb !== "uninstall") || !pkg || parts.length !== 3) {
