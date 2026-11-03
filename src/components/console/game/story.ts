@@ -74,6 +74,7 @@ export const opening = [
   "Year 1987 of the deploy calendar. The Pipeline Kingdom has gone dark.",
   "Four keeps have fallen to outages. One operator can still walk the green.",
   "Pick your class. Tap the land. Quiet the four bosses.",
+  "The guide, the houses, the shrine, and the grove open the kingdom's records.",
 ];
 
 export const ending = [

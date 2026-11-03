@@ -20,6 +20,17 @@ export const toolKeys = [
 
 export type ToolId = (typeof toolKeys)[number]["id"];
 
+const sceneBase = import.meta.env.BASE_URL;
+
+export const sectionScene: Record<SectionId, string> = {
+  about: `${sceneBase}console/scene-about.png`,
+  education: `${sceneBase}console/scene-education.png`,
+  certs: `${sceneBase}console/scene-certs.png`,
+  projects: `${sceneBase}console/scene-projects.png`,
+  skills: `${sceneBase}console/scene-skills.png`,
+  work: `${sceneBase}console/scene-work.png`,
+};
+
 export function moduleTitle(section: SectionId | null) {
   if (!section) return "SELECT A MODULE";
   return moduleKeys.find((item) => item.id === section)?.title ?? "SELECT A MODULE";

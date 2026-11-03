@@ -1794,7 +1794,9 @@ a {
 .rpg-hero:focus-visible,
 .rpg-fight:focus-visible,
 .rpg-box:focus-visible,
-.rpg-reset:focus-visible {
+.rpg-reset:focus-visible,
+.rpg-close:focus-visible,
+.rpg-read:focus-visible {
   outline: 3px solid #1d3fbe;
   outline-offset: 2px;
 }
@@ -2715,4 +2717,90 @@ a {
   background: linear-gradient(#7cff6b, #2fbe4a);
   font-size: 16px;
   cursor: pointer;
+}
+
+.rpg-visit {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  background-color: #102040;
+  background-position: center;
+  background-size: cover;
+  image-rendering: pixelated;
+}
+
+.rpg-close,
+.rpg-read {
+  font-family: var(--font-display);
+  color: #1a2140;
+  border: 3px solid #1a2140;
+  cursor: pointer;
+}
+
+.rpg-close {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 4;
+  min-height: 36px;
+  padding: 4px 8px;
+  background: #ffe14a;
+  font-size: 12px;
+}
+
+.rpg-dialogue {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  bottom: 6px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  max-height: 70%;
+}
+
+.rpg-dialogue .rpg-box {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  width: 100%;
+  max-height: 100%;
+  overflow: auto;
+  white-space: pre-wrap;
+}
+
+.rpg-read {
+  min-height: 36px;
+  padding: 4px 10px;
+  background: #7ad0ff;
+  font-size: 14px;
+}
+
+.rpg-scroll {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 46px;
+  bottom: 6px;
+  z-index: 4;
+  overflow: auto;
+  border: 3px solid #1a2140;
+  background: #fff8e8;
+  box-shadow: 3px 3px 0 #0c1c58;
+  color: #1a2140;
+}
+
+.rpg-scroll .article-view,
+.rpg-scroll .jrpg-card {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.rpg-scroll .article {
+  color: #1a2140;
+  font-family: var(--font-body);
 }

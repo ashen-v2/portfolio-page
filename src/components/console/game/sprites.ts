@@ -1,4 +1,4 @@
-import { TILE, VIEW_COLS, VIEW_H, VIEW_ROWS, VIEW_W, camera, tileAt } from "./map";
+import { TILE, VIEW_COLS, VIEW_H, VIEW_ROWS, VIEW_W, camera, landmarkAt, landmarks, tileAt } from "./map";
 import type { BossId, Dir, HeroId } from "./story";
 
 export type AttackAnim = "none" | HeroId | "hit";
@@ -130,8 +130,106 @@ function drawHouse(ctx: CanvasRenderingContext2D, x: number, y: number) {
   ctx.fillRect(x + 2, y + 13, 12, 1);
 }
 
+function drawPlaceMark(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  ctx.fillStyle = CYAN;
+  ctx.fillRect(x + 5, y - 5, 6, 2);
+}
+
+function drawSchool(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  ctx.fillStyle = BROWN;
+  ctx.fillRect(x + 4, y - 14, 2, 8);
+  ctx.fillStyle = RED;
+  ctx.fillRect(x + 6, y - 14, 6, 3);
+  ctx.fillStyle = BLUE;
+  ctx.fillRect(x + 1, y - 6, 30, 6);
+  ctx.fillStyle = "#1736a8";
+  ctx.fillRect(x + 1, y - 2, 30, 2);
+  ctx.fillStyle = WHITE;
+  ctx.fillRect(x + 2, y, 28, 14);
+  ctx.fillStyle = CYAN;
+  ctx.fillRect(x + 5, y + 3, 4, 4);
+  ctx.fillRect(x + 23, y + 3, 4, 4);
+  ctx.fillStyle = BROWN;
+  ctx.fillRect(x + 13, y + 6, 6, 8);
+  drawPlaceMark(ctx, x + 12, y - 8);
+}
+
+function drawShop(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  for (let i = 0; i < 8; i += 1) {
+    ctx.fillStyle = i % 2 === 0 ? RED : WHITE;
+    ctx.fillRect(x + i * 4, y - 7, 4, 6);
+  }
+  ctx.fillStyle = TAN;
+  ctx.fillRect(x + 2, y, 28, 14);
+  ctx.fillStyle = "#14301c";
+  ctx.fillRect(x + 4, y + 3, 12, 7);
+  ctx.fillStyle = GOLD;
+  ctx.fillRect(x + 6, y + 5, 8, 2);
+  ctx.fillStyle = BROWN;
+  ctx.fillRect(x + 20, y + 5, 6, 9);
+  drawPlaceMark(ctx, x + 12, y - 10);
+}
+
+function drawWorkshop(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  ctx.fillStyle = STONE;
+  ctx.fillRect(x + 1, y - 5, 30, 5);
+  ctx.fillStyle = GRAY;
+  ctx.fillRect(x + 2, y, 28, 14);
+  ctx.fillStyle = INK;
+  ctx.fillRect(x + 4, y + 4, 16, 10);
+  ctx.fillStyle = GOLD;
+  ctx.fillRect(x + 6, y + 6, 7, 2);
+  ctx.fillStyle = RED;
+  ctx.fillRect(x + 14, y + 8, 2, 4);
+  ctx.fillStyle = BROWN;
+  ctx.fillRect(x + 22, y + 6, 5, 8);
+  drawPlaceMark(ctx, x + 12, y - 8);
+}
+
+function drawGuide(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  ctx.fillStyle = INK;
+  ctx.fillRect(x + 5, y + 1, 6, 2);
+  ctx.fillStyle = SKIN;
+  ctx.fillRect(x + 5, y + 2, 6, 4);
+  ctx.fillStyle = INK;
+  ctx.fillRect(x + 6, y + 4, 1, 1);
+  ctx.fillRect(x + 9, y + 4, 1, 1);
+  ctx.fillStyle = WHITE;
+  ctx.fillRect(x + 4, y + 6, 8, 6);
+  ctx.fillStyle = CYAN;
+  ctx.fillRect(x + 6, y + 7, 4, 2);
+  ctx.fillStyle = INK;
+  ctx.fillRect(x + 5, y + 12, 2, 3);
+  ctx.fillRect(x + 9, y + 12, 2, 3);
+  drawPlaceMark(ctx, x, y);
+}
+
+function drawShrine(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  ctx.fillStyle = GRAY;
+  ctx.fillRect(x + 2, y + 1, 12, 3);
+  ctx.fillRect(x + 3, y + 4, 10, 9);
+  ctx.fillRect(x + 1, y + 13, 14, 2);
+  ctx.fillStyle = STONE;
+  ctx.fillRect(x + 4, y + 5, 8, 7);
+  ctx.fillStyle = GOLD;
+  ctx.fillRect(x + 6, y + 6, 4, 4);
+  ctx.fillStyle = RED;
+  ctx.fillRect(x + 7, y + 7, 2, 2);
+  drawPlaceMark(ctx, x, y - 2);
+}
+
+function drawGroveSign(ctx: CanvasRenderingContext2D, x: number, y: number) {
+  ctx.fillStyle = BROWN;
+  ctx.fillRect(x + 7, y + 7, 2, 8);
+  ctx.fillStyle = TAN;
+  ctx.fillRect(x + 3, y + 2, 10, 7);
+  ctx.fillStyle = MINT;
+  ctx.fillRect(x + 5, y + 4, 6, 2);
+  drawPlaceMark(ctx, x, y - 2);
+}
+
 function paintHero(ctx: CanvasRenderingContext2D, id: HeroId, facing: "down" | "up" | "side", scale: number) {
-  const cloth = id === "terra" ? CYAN : id === "pyth" ? GREEN : BLUE;
+  const cloth = id === "terra" ? CYAN : id === "pyth" ? GOLD : BLUE;
   const hair = id === "terra" ? GOLD : id === "helm" ? WHITE : INK;
   const side = facing === "side";
   const back = facing === "up";
@@ -356,8 +454,38 @@ export function drawField(ctx: CanvasRenderingContext2D, view: FieldView) {
       const px = tx * TILE;
       const py = ty * TILE;
       if (tile === "T") stamps.push({ y: gy, draw: () => drawTree(ctx, px, py) });
-      if (tile === "H") stamps.push({ y: gy, draw: () => drawHouse(ctx, px, py) });
+      if (tile === "H") {
+        const place = landmarkAt(gx, gy);
+        const door = place?.tiles[0];
+        if (place && door && door.x === gx && door.y === gy) {
+          stamps.push({
+            y: gy,
+            draw: () => {
+              if (place.kind === "school") drawSchool(ctx, px, py);
+              else if (place.kind === "shop") drawShop(ctx, px, py);
+              else drawWorkshop(ctx, px, py);
+            },
+          });
+        } else if (!place) {
+          stamps.push({ y: gy, draw: () => drawHouse(ctx, px, py) });
+        }
+      }
     }
+  }
+
+  for (const place of landmarks) {
+    if (place.kind !== "guide" && place.kind !== "shrine" && place.kind !== "grove") continue;
+    const tile = place.tiles[0];
+    const px = (tile.x - cam.x) * TILE;
+    const py = (tile.y - cam.y) * TILE;
+    stamps.push({
+      y: tile.y,
+      draw: () => {
+        if (place.kind === "guide") drawGuide(ctx, px, py);
+        else if (place.kind === "shrine") drawShrine(ctx, px, py);
+        else drawGroveSign(ctx, px, py);
+      },
+    });
   }
 
   for (const boss of view.bosses) {
