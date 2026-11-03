@@ -2353,8 +2353,15 @@ a {
   text-shadow: 2px 2px 0 #12082e;
 }
 
+.desk[data-layout="stage"] .home-feature {
+  align-self: end;
+  height: 108%;
+  gap: 4px;
+}
+
 .desk[data-layout="stage"] .home-feature-title {
   font-size: 34px;
+  line-height: 1;
 }
 
 .desk[data-layout="stage"] .home-tiles {
@@ -2362,10 +2369,18 @@ a {
   grid-template-rows: minmax(0, 0.86fr) minmax(0, 1fr);
 }
 
-.desk[data-layout="stage"] .home-tile-files,
-.desk[data-layout="stage"] .home-tile-calc {
+.desk[data-layout="stage"] .home-tile-files {
   aspect-ratio: 1;
   width: 84%;
+  height: auto;
+  max-height: 100%;
+  justify-self: center;
+  align-self: center;
+}
+
+.desk[data-layout="stage"] .home-tile-calc {
+  aspect-ratio: 1;
+  width: 66%;
   height: auto;
   max-height: 100%;
   justify-self: center;
