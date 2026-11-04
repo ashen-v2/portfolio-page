@@ -106,13 +106,28 @@ export function runCommand(raw: string, content: SiteContent, services: ServiceS
   if (name === "apt") {
     const verb = parts[1]?.toLowerCase();
     if (verb === "list" && parts.length === 2) {
+      const listed = ["files", "notes", "canvas", "calc"] as const;
+      const rows = listed.map((id) => {
+        const label = serviceLabel(id).padEnd(12, " ");
+        const status = services[id].installed ? "installed" : "available to install";
+        return `${label}${status}`;
+      });
       const vault = services.vault;
-      const status = !vault.installed
+      const vaultStatus = !vault.installed
         ? "available to install"
         : vault.enabled
           ? "installed, enabled"
           : "installed, disabled";
-      return { kind: "print", lines: ["additional packages available for installation", `vault    ${status}`] };
+      return {
+        kind: "print",
+        lines: [
+          "additional packages available for installation",
+          ...rows,
+          `vault       ${vaultStatus}`,
+          "apt install <package>",
+          "apt uninstall <package>",
+        ],
+      };
     }
     const pkg = resolveApp(parts[2] ?? "");
     if ((verb !== "install" && verb !== "uninstall") || !pkg || parts.length !== 3) {

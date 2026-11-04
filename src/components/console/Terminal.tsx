@@ -60,7 +60,7 @@ function openingLines(content: SiteContent): Line[] {
   const rows: Omit<Line, "id">[] = [
     ...BANNER.map((text) => ({ kind: "banner" as const, text })),
     { kind: "out", text: content.profile.name },
-    { kind: "boot", text: `${promptFor(user)} type help` },
+    { kind: "boot", text: `${promptFor(user)} type help to list all commands` },
   ];
   return rows.map((row, index) => ({ id: index + 1, ...row }));
 }
@@ -214,7 +214,7 @@ export function Terminal({
       commandLine,
       ...printed.map((text) => ({
         id: nextId.current++,
-        kind: (text === "apt list     extra packages" ? "mark" : "out") as "mark" | "out",
+        kind: (text === "apt list     extra packages" || /^vault\s{2,}/.test(text) ? "mark" : "out") as "mark" | "out",
         text,
       })),
     ]);
