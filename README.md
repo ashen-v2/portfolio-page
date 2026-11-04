@@ -1,60 +1,107 @@
-# Ashen Viduranga — Pixel UI Art Portfolio
+# Ashen Viduranga — Pixel Console Portfolio
 
-Static DevOps intern portfolio. Single-page Vite + React + TypeScript app; `npm run build` emits a `dist/` folder you can host on **GitHub Pages**, **Vercel**, or **S3** with no server. The generated asset URLs are relative, so the site works on both the GitHub project path and a custom domain.
+A one-page DevOps portfolio drawn as a handheld pixel console. Education, certificates, projects, skills, and work all come from one JSON file, so the copy can change without touching the UI. The live site is [hosted on AWS Amplify](https://main.d1u871v01h15e8.amplifyapp.com/).
 
-## Local
+Built with React 19, TypeScript, and Vite 7. `npm run build` writes a static `dist/` folder. Asset URLs are relative (`base: "./"` in [vite.config.ts](vite.config.ts)), so the same build works on a project path or a custom domain.
+
+## Screenshots
+
+### Console
+
+![Home screen of the pixel console, with Quest, Files, Notes, Canvas, and Calculator over a city wallpaper](docs/screenshots/console-home.png)
+
+From 768px wide the page is a handheld console: home screen, module keys, and a side panel with the portrait, badges, and contact links. That covers full laptop windows, a browser snapped to half of a 24-inch or 14–16-inch display, and iPads in landscape (plus most iPads in portrait).
+
+### Projects
+
+![Projects module open on the console, showing the Xala project](docs/screenshots/console-projects.png)
+
+The module keys open About, Education, Certificates, Projects, Skills, and Work. A project with an article has a longer markdown page.
+
+### Phone
+
+![The home screen stacked for a narrow window, with the module keys under the display](docs/screenshots/phone-home.png)
+
+Below 768px the modules stack into the phone layout. The layout follows the window: snap a desktop browser to half the screen and the console stays a real handheld instead of scaling or stretching. Rotate a phone to landscape (typically 800px+) and it uses the console too.
+
+### Quest
+
+![Quest overworld with buildings labeled Projects, Work, and About](docs/screenshots/console-quest.png)
+
+Quest is a small field. Tap the ground to walk, pick a kit, and tap a marked place to read that section of the portfolio.
+
+## On the console
+
+**Home.** Quest, Files, Notes, Canvas, and Calculator sit on the city wallpaper, with a terminal prompt and a system readout. Notes stay in this browser under `console-notes`. Files holds section pictures and launchers for the installed apps. `system_files` stays locked.
+
+**Terminal.** Open it from the home screen. It reads the same `content.json` as the modules.
+
+| Command | What it prints or opens |
+| --- | --- |
+| `help` | The command list |
+| `whoami`, `about` | Name, role, location, badges |
+| `education`, `certs`, `skills`, `work` | Those sections |
+| `projects`, `ls` | Project ids and titles |
+| `cat <id>` | One project |
+| `open <id>` | That project's article, when it has one |
+| `contact` | GitHub, LinkedIn, email, and the CV path |
+| `files`, `notes`, `canvas`, `calculator`, `quest` | That app, if it is installed and enabled |
+| `ps` | Enabled services |
+| `apt list` | Extra packages |
+| `apt install\|uninstall <app>` | Install or remove an app |
+| `systemctl enable\|disable <app>` | Turn an installed app on or off |
+| `clear` | Clear the screen |
+
+Vault starts uninstalled, and the console has no free slot for it. Free one, then turn Vault on:
+
+```text
+apt uninstall notes
+apt install vault
+systemctl enable vault
+```
+
+**Projects.** Cards come from the `quests` array. An `article` field, such as `"xala.md"`, loads that file from [public/articles/](public/articles/) when you choose **See more** or open `#article/xala`. The hash uses the quest id.
+
+## Run it locally
 
 ```bash
 npm install
 npm run dev
 ```
 
-Open the printed localhost URL. Production build:
+Open the localhost URL Vite prints. Production build:
 
 ```bash
 npm run build
 npm run preview
 ```
 
-## Deploy on Vercel
+`npm run build` typechecks with `tsc --noEmit`, then writes `dist/`. Saving [public/content.json](public/content.json) full-reloads the dev server.
 
-1. Push this repo to GitHub.
-2. Import the project in [Vercel](https://vercel.com). Framework preset: **Vite**. Output directory: `dist`.
-3. Deploy. `vercel.json` already rewrites unknown paths to `index.html`.
+## Change the copy
 
-## Deploy on GitHub Pages
+Edit [public/content.json](public/content.json) and refresh. That file is the profile, badges, education, certificates, skills, projects, work, and the save-data lines on the About record in Quest.
 
-The repository workflow deploys the `gh-pages` branch to GitHub Pages. Enable GitHub Pages in the repository settings with **GitHub Actions** as the source, then push to `gh-pages` or run the workflow manually.
+A badge is `{ "label": "AWS CCP", "tone": "gold" }`. Tones are `gold`, `cyan`, and `mint`.
 
-Or from the CLI:
-
-```bash
-npx vercel
-```
-
-## Deploy on S3
-
-1. `npm run build`
-2. Create a public website bucket (or use CloudFront in front of a private bucket).
-3. Upload the contents of `dist/`:
-
-```bash
-aws s3 sync dist/ s3://YOUR_BUCKET_NAME --delete
-```
-
-4. Enable **Static website hosting** on the bucket. Index document: `index.html`.
-5. No rewrite rules are required — the site is a single `index.html` with hash/anchor navigation.
-
-## Content
-
-Edit [`public/content.json`](public/content.json), then refresh. That file is the player-select text and tags, education, certs, skills, quests, work log, and save-data lines. A new cert is one object:
+A certificate is one object:
 
 ```json
 { "title": "New cert", "issuer": "Amazon Web Services", "when": "Oct 2026" }
 ```
 
-A player-select tag is `{ "label": "AWS CCP", "tone": "gold" }`. Tones are `gold`, `cyan`, and `mint`. Quest bullets are an array of strings.
+Project bullets are an array of strings. Set `article` to a markdown file name in `public/articles/` when the project has a long write-up. Leave it off when the card is enough.
 
-Commit the file so GitHub Pages or Vercel rebuilds. On S3, upload the new `content.json` from `dist/` after `npm run build`, or overwrite that one object. The certs window stays the height of the education column and scrolls when the list grows.
+The CV download uses `profile.cvFile`. Replace [public/Ashen_Viduranga_DevOps_Intern.pdf](public/Ashen_Viduranga_DevOps_Intern.pdf), or point `cvFile` at another file in `public/`.
 
-Replace [`public/Ashen_Viduranga_DevOps_Intern.pdf`](public/Ashen_Viduranga_DevOps_Intern.pdf) to update the downloadable CV. The `cvFile` field in `content.json` is the file name.
+Commit the JSON (and any new article or PDF) so the host rebuilds. On S3, upload the new files from `dist/` after `npm run build`.
+
+## Where things live
+
+- [src/App.tsx](src/App.tsx) — which module, tool, or `#article/…` page is open
+- [src/components/console/](src/components/console/) — the console, home apps, terminal, and Quest
+- [src/data/content.ts](src/data/content.ts) — the shape of `content.json`
+- [public/content.json](public/content.json) — the words on the site
+- [public/articles/](public/articles/) — project write-ups
+- [public/console/](public/console/) — scenes, portrait, and Quest art
+- [docs/screenshots/](docs/screenshots/) — the pictures in this README (they are not part of `dist/`)
