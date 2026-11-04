@@ -14,18 +14,18 @@ export type Tile = "G" | "P" | "W" | "=" | "T" | "H";
 export const MAP_ROWS = [
   "WWWWWWWWWWWWWWWWWWWW",
   "WTTGGGGGGGGGGGGGTTGW",
-  "WGTTGGGGGGGGGGGGGGGW",
+  "WGTTGGHHGGGGGGGGGGGW",
   "WGTGGPPPPPPPPPPGGGGW",
   "WTTGGPPGGGGGGPPGGTTW",
   "WWWWWPP====PPWWWWWWW",
   "WGGGPPGGGGGGPPGGGGGW",
   "WGGGPPGGGGGGPPGHHGGW",
-  "WTTGPPGGGGGGPPGGTTGW",
+  "WTTGPPGGHHGGPPGGGGGW",
   "WGGGGGGGGGGGGGGGGGGW",
-  "WGGHHGGGGGGGGGGGGGGW",
+  "WGGHHGGGGGGGGGHHGGGW",
   "WGGGGGGGGGGGGGGGGGGW",
-  "WGGGGTTGGGGGGGTTGGGW",
-  "WGGGGGGGGGGHHGGGGGGW",
+  "WGGGGTTGHHGGGGTTGGGW",
+  "WGGGGGGGGGGGGGGGGGGW",
   "WGGGGGGGGGGGGGGGGGGW",
   "WWWWWWWWWWWWWWWWWWWW",
 ];
@@ -48,11 +48,11 @@ export type Landmark = {
 };
 
 export const landmarks: Landmark[] = [
-  { id: "about", kind: "guide", tiles: [{ x: 8, y: 12 }] },
+  { id: "about", kind: "guide", tiles: [{ x: 8, y: 12 }, { x: 9, y: 12 }] },
   { id: "education", kind: "school", tiles: [{ x: 3, y: 10 }, { x: 4, y: 10 }] },
-  { id: "certs", kind: "shrine", tiles: [{ x: 16, y: 3 }] },
-  { id: "projects", kind: "workshop", tiles: [{ x: 11, y: 13 }, { x: 12, y: 13 }] },
-  { id: "skills", kind: "grove", tiles: [{ x: 4, y: 2 }] },
+  { id: "certs", kind: "shrine", tiles: [{ x: 6, y: 2 }, { x: 7, y: 2 }] },
+  { id: "projects", kind: "workshop", tiles: [{ x: 8, y: 8 }, { x: 9, y: 8 }] },
+  { id: "skills", kind: "grove", tiles: [{ x: 14, y: 10 }, { x: 15, y: 10 }] },
   { id: "work", kind: "shop", tiles: [{ x: 15, y: 7 }, { x: 16, y: 7 }] },
 ];
 
@@ -82,12 +82,8 @@ for (const boss of bossSpots) {
 
 for (const place of landmarks) {
   for (const tile of place.tiles) {
-    const built = place.kind === "school" || place.kind === "workshop" || place.kind === "shop";
-    if (built && tileAt(tile.x, tile.y) !== "H") {
+    if (tileAt(tile.x, tile.y) !== "H") {
       throw new Error(`${place.kind} is not on a building`);
-    }
-    if (!built && !terrainWalkable(tile.x, tile.y)) {
-      throw new Error(`${place.kind} is not on open ground`);
     }
     if (bossSpots.some((boss) => boss.x === tile.x && boss.y === tile.y)) {
       throw new Error(`${place.kind} overlaps a boss`);

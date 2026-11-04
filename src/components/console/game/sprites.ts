@@ -1,4 +1,5 @@
-import { TILE, VIEW_COLS, VIEW_H, VIEW_ROWS, VIEW_W, camera, landmarkAt, landmarks, tileAt } from "./map";
+import type { SectionId } from "../modules";
+import { TILE, VIEW_COLS, VIEW_H, VIEW_ROWS, VIEW_W, camera, landmarkAt, tileAt } from "./map";
 import type { BossId, Dir, HeroId } from "./story";
 
 export type AttackAnim = "none" | HeroId | "hit";
@@ -145,32 +146,36 @@ function drawTree(ctx: CanvasRenderingContext2D, x: number, y: number) {
   blit(ctx, "/console/quest/tiles/nature.png", 0, 0, 32, 32, x - 8, y - 16, 1);
 }
 
-function drawHouse(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  blit(ctx, "/console/quest/tiles/house.png", 0, 16, 32, 32, x, y - 16, 1);
+const HOUSE = "/console/quest/tiles/house.png";
+
+const PLACES: Record<SectionId, { sx: number; sy: number; sw: number; sh: number; label: string }> = {
+  about: { sx: 4, sy: 0, sw: 56, sh: 48, label: "ABOUT" },
+  education: { sx: 197, sy: 0, sw: 54, sh: 48, label: "EDUCATION" },
+  certs: { sx: 372, sy: 0, sw: 40, sh: 52, label: "CERTS" },
+  projects: { sx: 65, sy: 4, sw: 60, sh: 44, label: "PROJECTS" },
+  skills: { sx: 132, sy: 0, sw: 56, sh: 52, label: "SKILLS" },
+  work: { sx: 257, sy: 0, sw: 46, sh: 48, label: "WORK" },
+};
+
+function drawLabel(ctx: CanvasRenderingContext2D, text: string, x: number, y: number) {
+  ctx.font = 'bold 8px "Pixelify Sans", sans-serif';
+  ctx.textAlign = "center";
+  ctx.textBaseline = "top";
+  const width = Math.ceil(ctx.measureText(text).width);
+  const half = width / 2 + 2;
+  const cx = Math.min(VIEW_W - half, Math.max(half, x));
+  const left = Math.round(cx - half);
+  ctx.fillStyle = "#1a2140";
+  ctx.fillRect(left, y, width + 4, 10);
+  ctx.fillStyle = "#ffe14a";
+  ctx.fillText(text, Math.round(cx), y + 1);
 }
 
-function drawSchool(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  blit(ctx, "/console/quest/tiles/house.png", 200, 8, 32, 32, x, y - 16, 1);
-}
-
-function drawShop(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  blit(ctx, "/console/quest/tiles/house.png", 0, 144, 32, 32, x, y - 16, 1);
-}
-
-function drawWorkshop(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  blit(ctx, "/console/quest/tiles/house.png", 64, 16, 32, 32, x, y - 16, 1);
-}
-
-function drawShrine(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  blit(ctx, "/console/quest/tiles/house.png", 48, 192, 32, 32, x - 8, y - 16, 1);
-}
-
-function drawGroveSign(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  blit(ctx, "/console/quest/tiles/house.png", 48, 48, 32, 16, x - 8, y, 1);
-}
-
-function drawGuide(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  blit(ctx, "/console/quest/ninja/villager.png", 0, 0, 16, 16, x, y, 1);
+function drawPlace(ctx: CanvasRenderingContext2D, x: number, y: number, id: SectionId) {
+  const place = PLACES[id];
+  const top = y + TILE - place.sh;
+  blit(ctx, HOUSE, place.sx, place.sy, place.sw, place.sh, x, top, 1);
+  drawLabel(ctx, place.label, x + place.sw / 2, y + 2);
 }
 
 function drawCratePile(ctx: CanvasRenderingContext2D, x: number, y: number) {
@@ -242,7 +247,7 @@ export function drawIntro(ctx: CanvasRenderingContext2D, frame: number) {
   }
   drawTree(ctx, 2 * TILE, 2 * TILE);
   drawTree(ctx, 12 * TILE, 3 * TILE);
-  drawHouse(ctx, 9 * TILE, 8 * TILE);
+  drawPlace(ctx, 9 * TILE, 8 * TILE, "about");
 }
 
 export function drawSelect(ctx: CanvasRenderingContext2D, frame: number) {
@@ -290,7 +295,7 @@ export function drawField(ctx: CanvasRenderingContext2D, view: FieldView) {
       if (tile === "G" && !landmarkAt(gx, gy)) {
         stamps.push({ y: gy, draw: () => grassExtra(ctx, px, py, gx, gy) });
       }
-      if (gx === 13 && gy === 13) {
+      if (gx === 10 && gy === 9) {
         stamps.push({ y: gy, draw: () => drawCratePile(ctx, px, py) });
       }
       if (tile === "T") stamps.push({ y: gy, draw: () => drawTree(ctx, px, py) });
@@ -300,32 +305,13 @@ export function drawField(ctx: CanvasRenderingContext2D, view: FieldView) {
         if (place && door && door.x === gx && door.y === gy) {
           stamps.push({
             y: gy,
-            draw: () => {
-              if (place.kind === "school") drawSchool(ctx, px, py);
-              else if (place.kind === "shop") drawShop(ctx, px, py);
-              else drawWorkshop(ctx, px, py);
-            },
+            draw: () => drawPlace(ctx, px, py, place.id),
           });
         } else if (!place) {
-          stamps.push({ y: gy, draw: () => drawHouse(ctx, px, py) });
+          stamps.push({ y: gy, draw: () => drawPlace(ctx, px, py, "about") });
         }
       }
     }
-  }
-
-  for (const place of landmarks) {
-    if (place.kind !== "guide" && place.kind !== "shrine" && place.kind !== "grove") continue;
-    const tile = place.tiles[0];
-    const px = (tile.x - cam.x) * TILE;
-    const py = (tile.y - cam.y) * TILE;
-    stamps.push({
-      y: tile.y,
-      draw: () => {
-        if (place.kind === "guide") drawGuide(ctx, px, py);
-        else if (place.kind === "shrine") drawShrine(ctx, px, py);
-        else drawGroveSign(ctx, px, py);
-      },
-    });
   }
 
   for (const boss of view.bosses) {

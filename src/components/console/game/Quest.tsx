@@ -341,8 +341,21 @@ export function Quest({ content }: { content: SiteContent | null }) {
   const musicRef = useRef<HTMLAudioElement | null>(null);
   const slashRef = useRef<HTMLAudioElement | null>(null);
   const hitRef = useRef<HTMLAudioElement | null>(null);
+  const mutedRef = useRef(false);
+  const [muted, setMuted] = useState(false);
+
+  function toggleMute() {
+    const next = !mutedRef.current;
+    mutedRef.current = next;
+    setMuted(next);
+    const music = musicRef.current;
+    if (!music) return;
+    if (next) music.pause();
+    else void music.play().catch(() => {});
+  }
 
   function playSfx(kind: "slash" | "hit") {
+    if (mutedRef.current) return;
     const audio = kind === "slash" ? slashRef.current : hitRef.current;
     if (!audio) return;
     audio.currentTime = 0;
@@ -647,8 +660,12 @@ export function Quest({ content }: { content: SiteContent | null }) {
     const battle = ui.mode === "battle";
     const file = battle ? "fight.ogg" : "village.ogg";
     if (!music.src.endsWith(file)) music.src = `/console/quest/audio/${file}`;
+    if (muted) {
+      music.pause();
+      return;
+    }
     void music.play().catch(() => {});
-  }, [ui.mode]);
+  }, [ui.mode, muted]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -708,11 +725,16 @@ export function Quest({ content }: { content: SiteContent | null }) {
         aria-label={canvasLabel}
         onPointerDown={onPointerDown}
       />
-      {playing ? (
-        <button type="button" className="rpg-reset" onClick={reset}>
-          Reset
+      <div className="rpg-tools">
+        <button type="button" className="rpg-reset" onClick={toggleMute} aria-pressed={muted}>
+          {muted ? "Sound" : "Mute"}
         </button>
-      ) : null}
+        {playing ? (
+          <button type="button" className="rpg-reset" onClick={reset}>
+            Reset
+          </button>
+        ) : null}
+      </div>
       {ui.mode === "field" && showHint ? <p className="rpg-hint">Tap the ground to walk. Marked places open records.</p> : null}
       {ui.mode === "intro" || ui.mode === "story" ? (
         <button type="button" className="rpg-box" onClick={continueText}>
