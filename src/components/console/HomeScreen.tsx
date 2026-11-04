@@ -38,6 +38,8 @@ export function HomeScreen({
   onOpen: (id: ToolId) => void;
 }) {
   const [clock, setClock] = useState(() => clockLabel(new Date()));
+  const [vaultHint, setVaultHint] = useState(false);
+  const vaultReady = services.vault.installed && services.vault.enabled;
 
   useEffect(() => {
     const id = window.setInterval(() => setClock(clockLabel(new Date())), 1000);
@@ -144,15 +146,26 @@ export function HomeScreen({
           </section>
           <button
             type="button"
-            className={`home-vault${services.vault.installed && services.vault.enabled ? "" : " home-widget-off"}`}
-            disabled={!(services.vault.installed && services.vault.enabled)}
-            onClick={() => onOpen("vault")}
+            className={`home-vault${vaultReady ? "" : " home-widget-off"}`}
+            onClick={() => {
+              if (vaultReady) onOpen("vault");
+              else setVaultHint(true);
+            }}
           >
             <img src={`${base}console/home/vault.png`} alt="" />
             <span>Vault</span>
           </button>
         </div>
       </div>
+      {vaultHint ? (
+        <div className="home-vault-hint" role="alertdialog" aria-label="Vault not installed">
+          <p>application is not installed</p>
+          <p>use the terminal to manage or install applications</p>
+          <button type="button" onClick={() => setVaultHint(false)}>
+            Close
+          </button>
+        </div>
+      ) : null}
     </div>
   );
 }

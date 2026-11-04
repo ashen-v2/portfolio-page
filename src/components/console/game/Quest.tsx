@@ -319,6 +319,7 @@ function paint(ctx: CanvasRenderingContext2D, world: World, now: number) {
     y: world.y,
     facing: world.facing,
     bob: world.bob,
+    walking: world.path.length > 0,
     frame,
     bosses: bossSpots.filter((boss) => !world.defeated.includes(boss.id)),
     goal: world.path.length ? world.goal : null,
@@ -337,6 +338,29 @@ export function Quest({ content }: { content: SiteContent | null }) {
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
   );
   const arriveRef = useRef<(arrival: Arrival) => void>(() => {});
+  const musicRef = useRef<HTMLAudioElement | null>(null);
+  const slashRef = useRef<HTMLAudioElement | null>(null);
+  const hitRef = useRef<HTMLAudioElement | null>(null);
+  const mutedRef = useRef(false);
+  const [muted, setMuted] = useState(false);
+
+  function toggleMute() {
+    const next = !mutedRef.current;
+    mutedRef.current = next;
+    setMuted(next);
+    const music = musicRef.current;
+    if (!music) return;
+    if (next) music.pause();
+    else void music.play().catch(() => {});
+  }
+
+  function playSfx(kind: "slash" | "hit") {
+    if (mutedRef.current) return;
+    const audio = kind === "slash" ? slashRef.current : hitRef.current;
+    if (!audio) return;
+    audio.currentTime = 0;
+    void audio.play().catch(() => {});
+  }
 
   function publish() {
     if (!world.current) return;
@@ -494,6 +518,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
     current.animStart = performance.now();
     current.animDur = strike;
     current.message = `${hero.name} uses ${hero.attack}!`;
+    playSfx("slash");
     publish();
 
     later(strike, () => {
@@ -528,6 +553,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
         after.animStart = performance.now();
         after.animDur = bite;
         after.message = `${boss.name} strikes!`;
+        playSfx("hit");
         publish();
         later(bite, () => {
           const hit = world.current;
@@ -609,6 +635,39 @@ export function Quest({ content }: { content: SiteContent | null }) {
   }
 
   useEffect(() => {
+    const music = new Audio();
+    music.loop = true;
+    music.volume = 0.35;
+    musicRef.current = music;
+    const slash = new Audio("/console/quest/audio/slash.wav");
+    slash.volume = 0.45;
+    slashRef.current = slash;
+    const hit = new Audio("/console/quest/audio/hit.wav");
+    hit.volume = 0.45;
+    hitRef.current = hit;
+    return () => {
+      music.pause();
+    };
+  }, []);
+
+  useEffect(() => {
+    const music = musicRef.current;
+    if (!music) return;
+    if (ui.mode === "intro") {
+      music.pause();
+      return;
+    }
+    const battle = ui.mode === "battle";
+    const file = battle ? "fight.ogg" : "village.ogg";
+    if (!music.src.endsWith(file)) music.src = `/console/quest/audio/${file}`;
+    if (muted) {
+      music.pause();
+      return;
+    }
+    void music.play().catch(() => {});
+  }, [ui.mode, muted]);
+
+  useEffect(() => {
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
     if (!canvas || !context) return;
@@ -666,11 +725,16 @@ export function Quest({ content }: { content: SiteContent | null }) {
         aria-label={canvasLabel}
         onPointerDown={onPointerDown}
       />
-      {playing ? (
-        <button type="button" className="rpg-reset" onClick={reset}>
-          Reset
+      <div className="rpg-tools">
+        <button type="button" className="rpg-reset" onClick={toggleMute} aria-pressed={muted}>
+          {muted ? "Sound" : "Mute"}
         </button>
-      ) : null}
+        {playing ? (
+          <button type="button" className="rpg-reset" onClick={reset}>
+            Reset
+          </button>
+        ) : null}
+      </div>
       {ui.mode === "field" && showHint ? <p className="rpg-hint">Tap the ground to walk. Marked places open records.</p> : null}
       {ui.mode === "intro" || ui.mode === "story" ? (
         <button type="button" className="rpg-box" onClick={continueText}>
@@ -680,7 +744,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
       ) : null}
       {ui.mode === "select" ? (
         <div className="rpg-select">
-          <p className="rpg-pick">Choose an operator</p>
+          <p className="rpg-pick">Choose a kit</p>
           {heroes.map((item) => (
             <button key={item.id} type="button" className="rpg-hero" onClick={() => choose(item.id)}>
               <strong>{item.name}</strong>
@@ -694,9 +758,11 @@ export function Quest({ content }: { content: SiteContent | null }) {
         <div className="rpg-hud">
           <div className="rpg-stats">
             <p>
+              <img className="rpg-heart" src="/console/quest/ui/heart.png" alt="" />
               {hero.name} HP {ui.heroHp}
             </p>
             <p>
+              <img className="rpg-heart" src="/console/quest/ui/heart.png" alt="" />
               {boss.name} HP {ui.bossHp}
             </p>
             <p className="rpg-msg" aria-live="polite">
