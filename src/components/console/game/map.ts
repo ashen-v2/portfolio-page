@@ -14,7 +14,7 @@ export type Tile = "G" | "P" | "W" | "=" | "T" | "H";
 export const MAP_ROWS = [
   "WWWWWWWWWWWWWWWWWWWW",
   "WTTGGGGGGGGGGGGGTTGW",
-  "WGTTGGHHGGGGGGGGGGGW",
+  "WGTTGGHHGGGHHGGGTTGW",
   "WGTGGPPPPPPPPPPGGGGW",
   "WTTGGPPGGGGGGPPGGTTW",
   "WWWWWPP====PPWWWWWWW",
@@ -22,7 +22,7 @@ export const MAP_ROWS = [
   "WGGGPPGGGGGGPPGHHGGW",
   "WTTGPPGGHHGGPPGGGGGW",
   "WGGGGGGGGGGGGGGGGGGW",
-  "WGGHHGGGGGGGGGHHGGGW",
+  "WGGHHGGGGGGGGGGGGGGW",
   "WGGGGGGGGGGGGGGGGGGW",
   "WGGGGTTGHHGGGGTTGGGW",
   "WGGGGGGGGGGGGGGGGGGW",
@@ -30,7 +30,7 @@ export const MAP_ROWS = [
   "WWWWWWWWWWWWWWWWWWWW",
 ];
 
-export const START = { x: 10, y: 14 };
+export const START = { x: 11, y: 12 };
 
 export const bossSpots: { id: BossId; x: number; y: number }[] = [
   { id: "drake", x: 9, y: 3 },
@@ -52,7 +52,7 @@ export const landmarks: Landmark[] = [
   { id: "education", kind: "school", tiles: [{ x: 3, y: 10 }, { x: 4, y: 10 }] },
   { id: "certs", kind: "shrine", tiles: [{ x: 6, y: 2 }, { x: 7, y: 2 }] },
   { id: "projects", kind: "workshop", tiles: [{ x: 8, y: 8 }, { x: 9, y: 8 }] },
-  { id: "skills", kind: "grove", tiles: [{ x: 14, y: 10 }, { x: 15, y: 10 }] },
+  { id: "skills", kind: "grove", tiles: [{ x: 11, y: 2 }, { x: 12, y: 2 }] },
   { id: "work", kind: "shop", tiles: [{ x: 15, y: 7 }, { x: 16, y: 7 }] },
 ];
 

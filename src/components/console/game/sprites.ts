@@ -178,10 +178,6 @@ function drawPlace(ctx: CanvasRenderingContext2D, x: number, y: number, id: Sect
   drawLabel(ctx, place.label, x + place.sw / 2, y + 2);
 }
 
-function drawCratePile(ctx: CanvasRenderingContext2D, x: number, y: number) {
-  blit(ctx, "/console/quest/items/crate-empty.png", 0, 0, 16, 15, x, y + 1, 1);
-}
-
 function grassExtra(ctx: CanvasRenderingContext2D, x: number, y: number, gx: number, gy: number) {
   const n = Math.abs(gx * 13 + gy * 7);
   if (n % 11 === 0) blit(ctx, "/console/quest/tiles/flower.png", 0, 0, 10, 8, x + 3, y + 6, 1);
@@ -294,9 +290,6 @@ export function drawField(ctx: CanvasRenderingContext2D, view: FieldView) {
       const py = ty * TILE;
       if (tile === "G" && !landmarkAt(gx, gy)) {
         stamps.push({ y: gy, draw: () => grassExtra(ctx, px, py, gx, gy) });
-      }
-      if (gx === 10 && gy === 9) {
-        stamps.push({ y: gy, draw: () => drawCratePile(ctx, px, py) });
       }
       if (tile === "T") stamps.push({ y: gy, draw: () => drawTree(ctx, px, py) });
       if (tile === "H") {
