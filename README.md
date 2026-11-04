@@ -10,7 +10,7 @@ Built with React 19, TypeScript, and Vite 7. `npm run build` writes a static `di
 
 ![Home screen of the pixel console, with Quest, Files, Notes, Canvas, and Calculator over a city wallpaper](docs/screenshots/console-home.png)
 
-From 768px wide the page is a handheld console: home screen, module keys, and a side panel with the portrait, badges, and contact links. That covers full laptop windows, a browser snapped to half of a 24-inch or 14–16-inch display, and iPads in landscape (plus most iPads in portrait).
+From 960px wide the page is a handheld console: home screen, module keys, and a side panel with the portrait, badges, and contact links. Between 960px and 1100px the console fits the window with no scale. From 1101px it uses the full desktop console. That covers full laptop windows, a browser snapped to half of a 24-inch display, and iPads in landscape.
 
 ### Projects
 
@@ -22,7 +22,7 @@ The module keys open About, Education, Certificates, Projects, Skills, and Work.
 
 ![The home screen stacked for a narrow window, with the module keys under the display](docs/screenshots/phone-home.png)
 
-Below 768px the modules stack into the phone layout. The layout follows the window: snap a desktop browser to half the screen and the console stays a real handheld instead of scaling or stretching. Rotate a phone to landscape (typically 800px+) and it uses the console too.
+Below 960px the modules stack into the phone layout when `default mobile view` is true in [public/content.json](public/content.json). A **Phone layout / Console layout** button can flip that for the rest of the visit; it is not saved, so a refresh returns to the band default. The button stays hidden from 1101px unless that visit override is on. Snap a 14-inch laptop to half the window (~640–768px) and you get the phone stack. Rotate a phone or iPad to landscape (960px+) and it uses the fitted console.
 
 ### Quest
 

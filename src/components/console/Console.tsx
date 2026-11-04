@@ -17,14 +17,11 @@ import { freshServices, type ServiceApp, type ServiceState } from "./services";
 
 type PhoneLayout = "stage" | "stack";
 
-function storedLayout(): PhoneLayout | null {
-  try {
-    const saved = localStorage.getItem("console-layout");
-    if (saved === "stack" || saved === "stage") return saved;
-  } catch {
-    /* use the content default */
+function bandLayout(defaultMobile: boolean): PhoneLayout {
+  if (window.matchMedia("(max-width: 959px)").matches) {
+    return defaultMobile ? "stack" : "stage";
   }
-  return null;
+  return "stage";
 }
 
 const base = import.meta.env.BASE_URL;
@@ -58,8 +55,8 @@ export function Console({
   onOpenArticle,
   onCloseArticle,
 }: ConsoleProps) {
-  const chosen = useRef(storedLayout() !== null);
-  const [layout, setLayout] = useState<PhoneLayout>(storedLayout() ?? "stage");
+  const chosen = useRef(false);
+  const [layout, setLayout] = useState<PhoneLayout>(() => bandLayout(true));
   const [services, setServices] = useState<ServiceState>(freshServices);
   const [terminalBooted, setTerminalBooted] = useState(false);
 
@@ -79,39 +76,19 @@ export function Console({
   const articleQuest = content?.quests.find((quest) => quest.id === articleId);
 
   useEffect(() => {
-    if (chosen.current) return;
-    if (window.matchMedia("(min-width: 1101px)").matches) return;
-    setLayout(content?.["default mobile view"] === true ? "stack" : "stage");
+    function applyBand() {
+      if (chosen.current) return;
+      if (!content) return;
+      setLayout(bandLayout(content["default mobile view"] === true));
+    }
+    applyBand();
+    window.addEventListener("resize", applyBand);
+    return () => window.removeEventListener("resize", applyBand);
   }, [content]);
 
-  useEffect(() => {
-    const wide = window.matchMedia("(min-width: 1101px)");
-    function useConsoleLayout() {
-      if (!wide.matches) return;
-      setLayout("stage");
-      chosen.current = true;
-      try {
-        localStorage.setItem("console-layout", "stage");
-      } catch {
-        /* keep the choice for this visit */
-      }
-    }
-    useConsoleLayout();
-    wide.addEventListener("change", useConsoleLayout);
-    return () => wide.removeEventListener("change", useConsoleLayout);
-  }, []);
-
   function toggleLayout() {
-    setLayout((current) => {
-      const next = current === "stage" ? "stack" : "stage";
-      chosen.current = true;
-      try {
-        localStorage.setItem("console-layout", next);
-      } catch {
-        /* keep the choice for this visit */
-      }
-      return next;
-    });
+    chosen.current = true;
+    setLayout((current) => (current === "stage" ? "stack" : "stage"));
   }
   const home = !tool && !section && !scene && !error && Boolean(content);
   const title = tool
@@ -175,7 +152,7 @@ export function Console({
   }
 
   return (
-    <div className="desk" data-layout={layout}>
+    <div className="desk" data-layout={layout} data-layout-override={chosen.current ? "true" : undefined}>
       <button type="button" className="layout-switch" onClick={toggleLayout}>
         {layout === "stage" ? "Phone layout" : "Console layout"}
       </button>
