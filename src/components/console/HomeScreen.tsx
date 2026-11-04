@@ -159,8 +159,13 @@ export function HomeScreen({
       </div>
       {vaultHint ? (
         <div className="home-vault-hint" role="alertdialog" aria-label="Vault not installed">
-          <p>application is not installed</p>
-          <p>run apt list in the terminal to see available packages</p>
+          <p>
+            vault is <strong className="home-vault-missing">not installed</strong>
+          </p>
+          <p>
+            run <span className="home-vault-cmd">apt list</span> in the{" "}
+            <span className="home-vault-cmd">terminal</span> to see installable packages
+          </p>
           <button type="button" onClick={() => setVaultHint(false)}>
             Close
           </button>
