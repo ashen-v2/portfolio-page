@@ -1,6 +1,6 @@
 # Ashen Viduranga — Pixel UI Art Portfolio
 
-Static DevOps intern portfolio. Single-page Vite + React + TypeScript app; `npm run build` emits a `dist/` folder you can host on **Vercel** or **S3** with no server.
+Static DevOps intern portfolio. Single-page Vite + React + TypeScript app; `npm run build` emits a `dist/` folder you can host on **GitHub Pages**, **Vercel**, or **S3** with no server. The generated asset URLs are relative, so the site works on both the GitHub project path and a custom domain.
 
 ## Local
 
@@ -21,6 +21,10 @@ npm run preview
 1. Push this repo to GitHub.
 2. Import the project in [Vercel](https://vercel.com). Framework preset: **Vite**. Output directory: `dist`.
 3. Deploy. `vercel.json` already rewrites unknown paths to `index.html`.
+
+## Deploy on GitHub Pages
+
+The repository workflow deploys the `gh-pages` branch to GitHub Pages. Enable GitHub Pages in the repository settings with **GitHub Actions** as the source, then push to `gh-pages` or run the workflow manually.
 
 Or from the CLI:
 
@@ -43,4 +47,14 @@ aws s3 sync dist/ s3://YOUR_BUCKET_NAME --delete
 
 ## Content
 
-Edit copy in [`src/data/content.ts`](src/data/content.ts). Replace [`public/Ashen_Viduranga_DevOps_Intern.pdf`](public/Ashen_Viduranga_DevOps_Intern.pdf) to update the downloadable CV.
+Edit [`public/content.json`](public/content.json), then refresh. That file is the player-select text and tags, education, certs, skills, quests, work log, and save-data lines. A new cert is one object:
+
+```json
+{ "title": "New cert", "issuer": "Amazon Web Services", "when": "Oct 2026" }
+```
+
+A player-select tag is `{ "label": "AWS CCP", "tone": "gold" }`. Tones are `gold`, `cyan`, and `mint`. Quest bullets are an array of strings.
+
+Commit the file so GitHub Pages or Vercel rebuilds. On S3, upload the new `content.json` from `dist/` after `npm run build`, or overwrite that one object. The certs window stays the height of the education column and scrolls when the list grows.
+
+Replace [`public/Ashen_Viduranga_DevOps_Intern.pdf`](public/Ashen_Viduranga_DevOps_Intern.pdf) to update the downloadable CV. The `cvFile` field in `content.json` is the file name.

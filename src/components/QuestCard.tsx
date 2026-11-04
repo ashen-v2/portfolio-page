@@ -6,9 +6,10 @@ type QuestCardProps = {
   subtitle: string;
   points: string[];
   stack: string[];
+  onReadMore?: () => void;
 };
 
-export function QuestCard({ title, status, subtitle, points, stack }: QuestCardProps) {
+export function QuestCard({ title, status, subtitle, points, stack, onReadMore }: QuestCardProps) {
   return (
     <article className="quest-card">
       <header>
@@ -30,6 +31,11 @@ export function QuestCard({ title, status, subtitle, points, stack }: QuestCardP
           </span>
         ))}
       </div>
+      {onReadMore ? (
+        <button type="button" className="btn secondary quest-read" onClick={onReadMore}>
+          See more
+        </button>
+      ) : null}
     </article>
   );
 }
