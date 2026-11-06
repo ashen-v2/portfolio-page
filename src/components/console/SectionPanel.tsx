@@ -3,6 +3,12 @@ import { QuestArticle } from "../QuestArticle";
 import { QuestCard } from "../QuestCard";
 import type { SiteContent } from "../../data/content";
 import type { SectionId } from "./modules";
+import { assignHudTones } from "./hudTone";
+import { AboutStatus } from "./sections/AboutStatus";
+import { CertCabinet } from "./sections/CertCabinet";
+import { EducationRoute } from "./sections/EducationRoute";
+import { SkillBag } from "./sections/SkillBag";
+import { WorkLog } from "./sections/WorkLog";
 
 type SectionPanelProps = {
   content: SiteContent;
@@ -47,61 +53,22 @@ export function SectionPanel({
   }
 
   if (section === "about") {
-    return (
-      <div className="module-copy jrpg-card">
-        <h3>{profile.name}</h3>
-        <p className="role-line">
-          {profile.className} · {profile.role}
-        </p>
-        <p>
-          {profile.location} · {profile.community}
-        </p>
-        <p>{profile.tagline}</p>
-        <dl className="save-list">
-          {saveData.map((entry) => (
-            <div key={entry.label}>
-              <dt>{entry.label}</dt>
-              <dd>{entry.value}</dd>
-            </div>
-          ))}
-        </dl>
-      </div>
-    );
+    return <AboutStatus profile={profile} saveData={saveData} />;
   }
 
   if (section === "education") {
-    return (
-      <div className="log-list">
-        {education.map((item) => (
-          <article className="log-item jrpg-card" key={item.title}>
-            <h3>{item.title}</h3>
-            {item.note ? <p className="note">{item.note}</p> : null}
-            <p>{item.org}</p>
-            <p className="when">{item.when}</p>
-          </article>
-        ))}
-      </div>
-    );
+    return <EducationRoute education={education} />;
   }
 
   if (section === "certs") {
-    return (
-      <div className="log-list">
-        {certifications.map((cert) => (
-          <article className="log-item jrpg-card" key={cert.title}>
-            <h3>{cert.title}</h3>
-            <p>{cert.issuer}</p>
-            <p className="when">{cert.when}</p>
-          </article>
-        ))}
-      </div>
-    );
+    return <CertCabinet certifications={certifications} />;
   }
 
   if (section === "projects") {
+    const tones = assignHudTones(orderedQuests.map((quest) => quest.id || quest.title));
     return (
-      <div className="quest-list">
-        {orderedQuests.map((quest) => (
+      <div className="hud-section hud-projects">
+        {orderedQuests.map((quest, index) => (
           <QuestCard
             key={quest.id}
             title={quest.title}
@@ -109,6 +76,7 @@ export function SectionPanel({
             subtitle={quest.subtitle}
             points={quest.points}
             stack={quest.stack}
+            tone={tones[index] ?? "gold"}
             onReadMore={quest.article ? () => onOpenArticle(quest.id) : undefined}
           />
         ))}
@@ -117,38 +85,8 @@ export function SectionPanel({
   }
 
   if (section === "skills") {
-    return (
-      <div className="skill-groups">
-        {skillGroups.map((group) => (
-          <section className="skill-group jrpg-card" key={group.id}>
-            <h3>{group.title}</h3>
-            <ul>
-              {group.skills.map((skill) => (
-                <li key={skill.name}>{skill.name}</li>
-              ))}
-            </ul>
-          </section>
-        ))}
-      </div>
-    );
+    return <SkillBag skillGroups={skillGroups} />;
   }
 
-  return (
-    <div className="log-list">
-      {experience.map((job) => (
-        <article className="log-item jrpg-card" key={job.title}>
-          <h3>{job.title}</h3>
-          <p>
-            {job.org} · {job.where}
-          </p>
-          <p className="when">{job.when}</p>
-          <ul>
-            {job.points.map((point) => (
-              <li key={point}>{point}</li>
-            ))}
-          </ul>
-        </article>
-      ))}
-    </div>
-  );
+  return <WorkLog experience={experience} />;
 }

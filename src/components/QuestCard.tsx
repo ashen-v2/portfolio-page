@@ -1,4 +1,5 @@
 import type { QuestStatus } from "../data/content";
+import type { HudTone } from "./console/hudTone";
 
 type QuestCardProps = {
   title: string;
@@ -6,16 +7,17 @@ type QuestCardProps = {
   subtitle: string;
   points: string[];
   stack: string[];
+  tone: HudTone;
   onReadMore?: () => void;
 };
 
-export function QuestCard({ title, status, subtitle, points, stack, onReadMore }: QuestCardProps) {
+export function QuestCard({ title, status, subtitle, points, stack, tone, onReadMore }: QuestCardProps) {
   return (
-    <article className="quest-card">
-      <header>
+    <article className={`quest-crate quest-crate-${tone}`}>
+      <header className="quest-crate__lid">
         <div>
           <h3>{title}</h3>
-          <p className="muted">{subtitle}</p>
+          <p className="quest-crate__sub">{subtitle}</p>
         </div>
         <span className={`quest-status ${status}`}>{status}</span>
       </header>
