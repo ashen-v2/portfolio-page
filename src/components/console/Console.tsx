@@ -12,7 +12,7 @@ import { Terminal } from "./Terminal";
 import { ToolDock } from "./ToolDock";
 import { Vault } from "./Vault";
 import { Viewport } from "./Viewport";
-import { moduleTitle, sectionScene, toolTitle, type SectionId, type ToolId } from "./modules";
+import { homePortrait, moduleTitle, sectionPortrait, sectionScene, toolTitle, type SectionId, type ToolId } from "./modules";
 import { freshServices, type ServiceApp, type ServiceState } from "./services";
 
 type PhoneLayout = "stage" | "stack";
@@ -26,7 +26,6 @@ function bandLayout(defaultMobile: boolean): PhoneLayout {
 
 const base = import.meta.env.BASE_URL;
 const citySrc = `${base}console/city.png`;
-const portraitSrc = `${base}console/portrait.png`;
 
 type ConsoleProps = {
   content: SiteContent | null;
@@ -176,7 +175,7 @@ export function Console({
           <SideColumn
             profile={content?.profile ?? null}
             badges={content?.badges ?? []}
-            portraitSrc={portraitSrc}
+            portraitSrc={scene ? sectionPortrait[scene] : homePortrait}
             location={content?.profile.location ?? ""}
           />
           <ToolDock

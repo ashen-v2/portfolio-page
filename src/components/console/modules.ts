@@ -26,11 +26,22 @@ const sceneBase = import.meta.env.BASE_URL;
 export const sectionScene: Record<SectionId, string> = {
   about: `${sceneBase}console/scene-about.png`,
   education: `${sceneBase}console/scene-education.png`,
-  certs: `${sceneBase}console/scene-certs.png`,
+  certs: `${sceneBase}console/scene-education.png`,
   projects: `${sceneBase}console/scene-projects.png`,
-  skills: `${sceneBase}console/scene-skills.png`,
+  skills: `${sceneBase}console/scene-projects.png`,
   work: `${sceneBase}console/scene-work.png`,
 };
+
+export const sectionPortrait: Record<SectionId, string> = {
+  about: `${sceneBase}console/portrait-about.png`,
+  education: `${sceneBase}console/portrait-education.png`,
+  certs: `${sceneBase}console/portrait-certs.png`,
+  projects: `${sceneBase}console/portrait-projects.png`,
+  skills: `${sceneBase}console/portrait-skills.png`,
+  work: `${sceneBase}console/portrait-work.png`,
+};
+
+export const homePortrait = `${sceneBase}console/portrait.png`;
 
 export function moduleTitle(section: SectionId | null) {
   if (!section) return "SELECT A MODULE";
