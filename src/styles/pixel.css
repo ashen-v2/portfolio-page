@@ -1370,6 +1370,165 @@ a {
   }
 }
 
+@media (max-width: 959px) {
+  .desk[data-layout="stage"] {
+    height: 100dvh;
+    min-height: 100dvh;
+    box-sizing: border-box;
+    justify-content: center;
+    overflow: hidden;
+    background-image: url("../assets/console/city-wide.png");
+    background-position: center bottom;
+    background-size: cover;
+  }
+
+  .desk[data-layout="stage"] .stage-slot {
+    display: block;
+    position: relative;
+    width: min(100%, calc((100dvh - 64px) * 16 / 9));
+    aspect-ratio: 16 / 9;
+    container-type: size;
+    flex: none;
+    overflow: hidden;
+  }
+
+  .desk[data-layout="stage"] .console {
+    position: absolute;
+    left: 0;
+    top: 0;
+    display: flex;
+    flex-direction: column;
+    width: 1100px;
+    height: calc(1100px * 9 / 16);
+    max-height: none;
+    aspect-ratio: auto;
+    transform: scale(calc(100cqw / 1100px));
+    transform-origin: top left;
+  }
+
+  .desk[data-layout="stage"] .console-body {
+    flex: 1;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) clamp(300px, 22%, 380px);
+    grid-template-rows: minmax(0, 1fr) 80px;
+    grid-template-areas:
+      "screen side"
+      "dock radar";
+    align-items: stretch;
+  }
+
+  .desk[data-layout="stage"] .console-stripe {
+    width: 12px;
+  }
+
+  .desk[data-layout="stage"] .screw {
+    width: 18px;
+    height: 18px;
+  }
+
+  .desk[data-layout="stage"] .screw::after {
+    top: 8px;
+  }
+
+  .desk[data-layout="stage"] .screen-shell {
+    height: 100%;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .desk[data-layout="stage"] .screen {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .desk[data-layout="stage"] .screen-view {
+    flex: 1;
+    min-height: 0;
+    aspect-ratio: auto;
+  }
+
+  .desk[data-layout="stage"] .screen-view::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(8, 16, 40, 0.16) 0 1px,
+      transparent 1px 3px
+    );
+  }
+
+  .desk[data-layout="stage"] .panel,
+  .desk[data-layout="stage"] .city-caption {
+    z-index: 2;
+  }
+
+  .desk[data-layout="stage"] .side-stack,
+  .desk[data-layout="stage"] .side-housing {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .desk[data-layout="stage"] .portrait-block {
+    min-height: 0;
+  }
+
+  .desk[data-layout="stage"] .radar {
+    height: 100%;
+    min-height: 0;
+    padding: 5px 6px;
+    gap: 4px 6px;
+    overflow: hidden;
+  }
+
+  .desk[data-layout="stage"] .radar-screen {
+    height: 34px;
+    min-height: 0;
+  }
+
+  .desk[data-layout="stage"] .radar-dial {
+    width: 40px;
+    height: 40px;
+  }
+
+  .desk[data-layout="stage"] .dock {
+    height: 100%;
+    min-height: 0;
+    padding: 5px;
+    background: linear-gradient(#9aa3b4, #6d7688);
+    box-shadow:
+      inset 0 4px 0 #545d6e,
+      inset 0 0 0 2px #d5dbe6,
+      0 3px 0 #9aa2b2;
+  }
+
+  .desk[data-layout="stage"] .keys {
+    height: 100%;
+    min-height: 0;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+  }
+
+  .desk[data-layout="stage"] .console-key {
+    height: 100%;
+    min-height: 0;
+    gap: 3px;
+    padding: 2px 4px;
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 800;
+  }
+
+  .desk[data-layout="stage"] .key-icon {
+    width: 22px;
+    height: 22px;
+  }
+}
+
 .desk[data-layout="stack"] {
   height: auto;
   min-height: 100dvh;
@@ -1604,6 +1763,14 @@ a {
   .terminal-prompt,
   .terminal-form input {
     font-size: 15px;
+  }
+}
+
+@media (max-width: 959px) {
+  .desk[data-layout="stage"] .terminal,
+  .desk[data-layout="stage"] .terminal-prompt,
+  .desk[data-layout="stage"] .terminal-form input {
+    font-size: calc(14px * 1100px / 100cqw);
   }
 }
 
