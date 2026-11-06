@@ -30,8 +30,8 @@ export const MAP_ROWS = [
   "WWWWWWWWWWWWWWWWWWWW",
 ];
 
-export const START = { x: 11, y: 12 };
-export const CHEST = { x: 14, y: 8 };
+export const START = { x: 12, y: 12 };
+export const CHEST = { x: 13, y: 7 };
 
 export const bossSpots: { id: BossId; x: number; y: number }[] = [
   { id: "drake", x: 9, y: 3 },
