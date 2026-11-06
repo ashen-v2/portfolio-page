@@ -230,6 +230,11 @@ function drawMarker(ctx: CanvasRenderingContext2D, x: number, y: number, frame: 
   ctx.fillRect(x + 11, y + 11, 3, 3);
 }
 
+export function drawChest(ctx: CanvasRenderingContext2D, open: boolean) {
+  const size = 32;
+  blit(ctx, "/console/quest/items/chest.png", open ? 16 : 0, 0, 16, 16, (VIEW_W - size) / 2, 24, 2);
+}
+
 export function drawIntro(ctx: CanvasRenderingContext2D, frame: number) {
   ctx.clearRect(0, 0, VIEW_W, VIEW_H);
   for (let y = 0; y < VIEW_ROWS; y += 1) {

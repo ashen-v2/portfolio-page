@@ -78,8 +78,9 @@ export const opening = [
 ];
 
 export const ending = [
-  "Four keeps quiet. The pipeline kingdom deploys.",
-  "Wander if you like. The grass will keep your steps.",
+  "The four keeps are quiet. The Pipeline Kingdom is saved.",
+  "The outages fade. Packets cross the bridge again.",
+  "A chest waits where the last boss fell.",
 ];
 
 const heroIds = new Set<string>(heroes.map((hero) => hero.id));
