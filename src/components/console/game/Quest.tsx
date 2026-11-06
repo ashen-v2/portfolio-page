@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import type { SiteContent } from "../../../data/content";
-import { landmarkAt, landmarks, START, TILE, VIEW_H, VIEW_W, bossSpots, camera, terrainWalkable } from "./map";
+import { landmarkAt, landmarks, START, CHEST, TILE, VIEW_H, VIEW_W, bossSpots, camera, terrainWalkable } from "./map";
 import { sectionScene, type SectionId } from "../modules";
 import { route, type Point } from "./path";
 import { drawBattle, drawField, drawIntro, drawSelect, type AttackAnim } from "./sprites";
 import { visitPages } from "./visit";
 import { QuestArticle } from "../../QuestArticle";
+import { openVaultLink, vaultSecrets } from "../vaultSecrets";
 import {
   bossById,
   bosses,
@@ -28,7 +29,8 @@ const BOSS_HP = 18;
 const BOSS_ATK = 4;
 
 type Mode = "intro" | "select" | "field" | "battle" | "story" | "visit";
-type Arrival = { kind: "boss"; id: BossId } | { kind: "place"; id: SectionId };
+type Reward = "none" | "pending" | "done";
+type Arrival = { kind: "boss"; id: BossId } | { kind: "place"; id: SectionId } | { kind: "chest" };
 type Phase = "menu" | "busy";
 
 type SaveData = {
@@ -37,6 +39,7 @@ type SaveData = {
   y: number;
   facing: Dir;
   defeated: BossId[];
+  reward: Reward;
 };
 
 type World = {
@@ -52,10 +55,13 @@ type World = {
   goal: Point | null;
   pendingBoss: BossId | null;
   pendingPlace: SectionId | null;
+  pendingChest: boolean;
   visitSection: SectionId | null;
   visitPage: number;
   visitArticle: string;
   defeated: BossId[];
+  reward: Reward;
+  chestOpen: boolean;
   heroHp: number;
   bossHp: number;
   bossId: BossId | null;
@@ -80,6 +86,7 @@ type Ui = {
   visitSection: SectionId | null;
   visitPage: number;
   visitArticle: string;
+  chestOpen: boolean;
 };
 
 function isDir(value: string): value is Dir {
@@ -99,7 +106,8 @@ function loadSave(): SaveData | null {
     const defeated = Array.isArray(data.defeated)
       ? data.defeated.filter((id): id is BossId => typeof id === "string" && isBossId(id))
       : [];
-    return { hero: data.hero, x: data.x, y: data.y, facing: data.facing, defeated };
+    const reward = data.reward === "pending" || data.reward === "done" ? data.reward : "none";
+    return { hero: data.hero, x: data.x, y: data.y, facing: data.facing, defeated, reward };
   } catch {
     return null;
   }
@@ -113,6 +121,7 @@ function saveWorld(world: World) {
     y: world.y,
     facing: world.facing,
     defeated: world.defeated,
+    reward: world.reward,
   };
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -146,10 +155,13 @@ function freshWorld(): World {
       goal: null,
       pendingBoss: null,
       pendingPlace: null,
+      pendingChest: false,
       visitSection: null,
       visitPage: 0,
       visitArticle: "",
       defeated: saved.defeated,
+      reward: saved.reward,
+      chestOpen: false,
       heroHp: HERO_HP,
       bossHp: BOSS_HP,
       bossId: null,
@@ -174,10 +186,13 @@ function freshWorld(): World {
     goal: null,
     pendingBoss: null,
     pendingPlace: null,
+    pendingChest: false,
     visitSection: null,
     visitPage: 0,
     visitArticle: "",
     defeated: [],
+    reward: "none",
+    chestOpen: false,
     heroHp: HERO_HP,
     bossHp: BOSS_HP,
     bossId: null,
@@ -204,6 +219,7 @@ function snapshot(world: World): Ui {
     visitSection: world.visitSection,
     visitPage: world.visitPage,
     visitArticle: world.visitArticle,
+    chestOpen: world.chestOpen,
   };
 }
 
@@ -277,14 +293,20 @@ function advanceWalk(world: World, dt: number, reduce: boolean): Arrival | null 
     world.x = next.x;
     world.y = next.y;
     world.bob = !world.bob;
-    if (!world.path.length && (world.pendingBoss || world.pendingPlace)) {
+    if (!world.path.length && (world.pendingBoss || world.pendingPlace || world.pendingChest)) {
       world.goal = null;
       saveWorld(world);
       if (world.pendingBoss) {
         const id = world.pendingBoss;
         world.pendingBoss = null;
         world.pendingPlace = null;
+        world.pendingChest = false;
         return { kind: "boss", id };
+      }
+      if (world.pendingChest) {
+        world.pendingChest = false;
+        world.pendingPlace = null;
+        return { kind: "chest" };
       }
       const id = world.pendingPlace;
       world.pendingPlace = null;
@@ -323,6 +345,8 @@ function paint(ctx: CanvasRenderingContext2D, world: World, now: number) {
     frame,
     bosses: bossSpots.filter((boss) => !world.defeated.includes(boss.id)),
     goal: world.path.length ? world.goal : null,
+    chest:
+      world.defeated.length >= bosses.length ? { x: CHEST.x, y: CHEST.y, open: world.chestOpen } : null,
   });
 }
 
@@ -333,6 +357,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
   const game = world.current;
   const [ui, setUi] = useState<Ui>(() => snapshot(game));
   const [showHint, setShowHint] = useState(() => game.mode === "intro" || game.mode === "select");
+  const [chestCat, setChestCat] = useState(false);
   const timers = useRef<number[]>([]);
   const reduceRef = useRef(
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -451,6 +476,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
 
   arriveRef.current = (arrival) => {
     if (arrival.kind === "boss") startBattle(arrival.id);
+    else if (arrival.kind === "chest") openChest();
     else openPlace(arrival.id);
   };
 
@@ -474,6 +500,23 @@ export function Quest({ content }: { content: SiteContent | null }) {
     publish();
   }
 
+  function openChest() {
+    const current = world.current;
+    if (!current || current.chestOpen || current.defeated.length < bosses.length) return;
+    current.chestOpen = true;
+    current.pendingChest = false;
+    current.goal = null;
+    publish();
+  }
+
+  function closeChest() {
+    const current = world.current;
+    if (!current) return;
+    current.chestOpen = false;
+    setChestCat(false);
+    publish();
+  }
+
   function choose(id: HeroId) {
     const current = world.current;
     if (!current) return;
@@ -482,6 +525,8 @@ export function Quest({ content }: { content: SiteContent | null }) {
     current.y = START.y;
     current.facing = "up";
     current.defeated = [];
+    current.reward = "none";
+    current.chestOpen = false;
     current.path = [];
     current.goal = null;
     current.pendingBoss = null;
@@ -533,6 +578,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
         if (!after || after.mode !== "battle" || after.bossId !== bossId) return;
         if (after.bossHp <= 0) {
           if (!after.defeated.includes(bossId)) after.defeated = [...after.defeated, bossId];
+          if (after.defeated.length >= bosses.length) after.reward = "pending";
           saveWorld(after);
           after.message = `${boss.name} is defeated!`;
           publish();
@@ -609,6 +655,28 @@ export function Quest({ content }: { content: SiteContent | null }) {
     const point = viewPoint(event);
     if (!point) return;
     const cam = camera(current.x, current.y);
+    const chestReady = current.defeated.length >= bosses.length;
+    const chestLeft = (CHEST.x - cam.x) * TILE - 6;
+    const chestTop = (CHEST.y - cam.y) * TILE - 6;
+    const onChest =
+      chestReady && point.x >= chestLeft && point.x < chestLeft + TILE + 12 && point.y >= chestTop && point.y < chestTop + TILE + 12;
+    if (onChest) {
+      current.pendingChest = true;
+      current.pendingBoss = null;
+      current.pendingPlace = null;
+      current.goal = { x: CHEST.x, y: CHEST.y };
+      current.path = route((x, y) => canWalk(current, x, y), { x: current.x, y: current.y }, current.goal);
+      current.stepAcc = 0;
+      setShowHint(false);
+      if (!current.path.length) openChest();
+      return;
+    }
+    current.pendingChest = false;
+    if (current.chestOpen) {
+      current.chestOpen = false;
+      setChestCat(false);
+      publish();
+    }
     const boss = livingBossAt(current, cam.x, cam.y, point.x, point.y);
     const place = boss ? null : landmarkTileAt(cam.x, cam.y, point.x, point.y);
     const tx = boss ? boss.x : place ? place.x : cam.x + Math.floor(point.x / TILE);
@@ -708,10 +776,11 @@ export function Quest({ content }: { content: SiteContent | null }) {
       ? "Overworld. Tap a spot to walk there. Tap a boss to fight. Tap a marked place to open a record."
       : ui.mode === "battle"
         ? "Battle."
-        : ui.mode === "visit"
-          ? "Record scene."
-          : "Quest scene.";
+          : ui.mode === "visit"
+            ? "Record scene."
+            : "Quest scene.";
   const playing = ui.mode === "field" || ui.mode === "battle" || ui.mode === "story";
+  const showBanner = ui.mode === "intro" || ui.mode === "select" || (ui.mode === "field" && showHint);
   const recordPages = ui.visitSection ? visitPages(content, ui.visitSection) : [];
   const record = recordPages[ui.visitPage] ?? recordPages[0];
 
@@ -735,12 +804,50 @@ export function Quest({ content }: { content: SiteContent | null }) {
           </button>
         ) : null}
       </div>
-      {ui.mode === "field" && showHint ? <p className="rpg-hint">Tap the ground to walk. Marked places open records.</p> : null}
+      {showBanner ? (
+        <p className="rpg-banner">Defeat all 4 bosses to open the treasure chest.</p>
+      ) : null}
+      {ui.mode === "field" && showHint ? (
+        <p className="rpg-hint">Tap the ground to walk. Marked places open records.</p>
+      ) : null}
       {ui.mode === "intro" || ui.mode === "story" ? (
         <button type="button" className="rpg-box" onClick={continueText}>
           {page}
           <i>Tap</i>
         </button>
+      ) : null}
+      {ui.chestOpen ? (
+        <div className="rpg-loot">
+          {chestCat ? (
+            <>
+              <button type="button" onClick={() => setChestCat(false)}>
+                Back
+              </button>
+              <img src={vaultSecrets.find((item) => item.id === "cat")?.image} alt="my_cat" />
+              <button type="button" onClick={closeChest}>
+                Close
+              </button>
+            </>
+          ) : (
+            <>
+              {vaultSecrets.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    if (item.image) setChestCat(true);
+                    else if (item.href) openVaultLink(item.href);
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+              <button type="button" onClick={closeChest}>
+                Close
+              </button>
+            </>
+          )}
+        </div>
       ) : null}
       {ui.mode === "select" ? (
         <div className="rpg-select">
