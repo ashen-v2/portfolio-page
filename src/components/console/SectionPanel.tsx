@@ -3,7 +3,6 @@ import { QuestArticle } from "../QuestArticle";
 import { QuestCard } from "../QuestCard";
 import type { SiteContent } from "../../data/content";
 import type { SectionId } from "./modules";
-import { assignHudTones } from "./hudTone";
 import { AboutStatus } from "./sections/AboutStatus";
 import { CertCabinet } from "./sections/CertCabinet";
 import { EducationRoute } from "./sections/EducationRoute";
@@ -65,10 +64,9 @@ export function SectionPanel({
   }
 
   if (section === "projects") {
-    const tones = assignHudTones(orderedQuests.map((quest) => quest.id || quest.title));
     return (
       <div className="hud-section hud-projects">
-        {orderedQuests.map((quest, index) => (
+        {orderedQuests.map((quest) => (
           <QuestCard
             key={quest.id}
             title={quest.title}
@@ -76,7 +74,6 @@ export function SectionPanel({
             subtitle={quest.subtitle}
             points={quest.points}
             stack={quest.stack}
-            tone={tones[index] ?? "gold"}
             onReadMore={quest.article ? () => onOpenArticle(quest.id) : undefined}
           />
         ))}

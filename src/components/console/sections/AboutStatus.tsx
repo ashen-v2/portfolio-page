@@ -1,5 +1,4 @@
 import type { Profile } from "../../../data/content";
-import { PixelIcon } from "../pixelIcons";
 
 type AboutStatusProps = {
   profile: Profile;
@@ -9,21 +8,18 @@ type AboutStatusProps = {
 export function AboutStatus({ profile, saveData }: AboutStatusProps) {
   return (
     <div className="hud-section hud-about">
-      <article className="trainer-card">
-        <header className="trainer-card__head">
-          <PixelIcon className="trainer-card__sprite" name="about" />
-          <div>
-            <p className="trainer-card__kicker">Trainer card</p>
-            <h3>{profile.name}</h3>
-            <p>
-              {profile.className} · {profile.role}
-            </p>
-          </div>
+      <article className="operator-file">
+        <header className="operator-file__head">
+          <p className="operator-file__kicker">Operator file</p>
+          <h3>{profile.name}</h3>
+          <p>
+            {profile.className} · {profile.role}
+          </p>
         </header>
-        <p className="trainer-card__flavor">{profile.tagline}</p>
-        <dl className="trainer-stats">
+        <p className="operator-file__lead">{profile.tagline}</p>
+        <dl className="operator-stats">
           {saveData.map((entry) => (
-            <div className="trainer-stat" key={entry.label}>
+            <div className="operator-stat" key={entry.label}>
               <dt>{entry.label}</dt>
               <dd>{entry.value}</dd>
             </div>

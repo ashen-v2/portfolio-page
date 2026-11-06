@@ -17,6 +17,17 @@ const palettes: Record<HudTone, { ribbon: string; medal: string; shine: string; 
   violet: { ribbon: "#6a4cbe", medal: "#c8b4ff", shine: "#ece4ff", core: "#8a6ad4", tag: "#1a2140" },
 };
 
+const edge: Record<HudTone, string> = {
+  gold: "#e2b423",
+  cyan: "#3d9be0",
+  mint: "#2a8a62",
+  red: "#e23b4a",
+  purple: "#7a12c9",
+  teal: "#0b6b5c",
+  coral: "#c45c52",
+  violet: "#6a4cbe",
+};
+
 function MedalIcon({ tone }: { tone: HudTone }) {
   const c = palettes[tone];
   return (
@@ -43,15 +54,19 @@ export function CertCabinet({ certifications }: { certifications: Cert[] }) {
     <div className="hud-section hud-certs">
       <div className="medal-case">
         <p className="medal-case__kicker">Hall of badges</p>
-        <ul className="medal-grid">
+        <ul className="medal-roster">
           {certifications.map((cert, index) => {
             const tone = tones[index] ?? "gold";
             return (
-              <li className={`medal-tile medal-tile-${tone}`} key={cert.title}>
+              <li className="medal-row" key={cert.title} style={{ borderLeftColor: edge[tone] }}>
                 <MedalIcon tone={tone} />
-                <h3>{cert.title}</h3>
-                <p>{cert.issuer}</p>
-                <p className="when">{cert.when}</p>
+                <div>
+                  <h3>{cert.title}</h3>
+                  <p>
+                    {cert.issuer}
+                    <span className="medal-row__when">{cert.when}</span>
+                  </p>
+                </div>
               </li>
             );
           })}

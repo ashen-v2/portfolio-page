@@ -15,7 +15,7 @@ export function WorkLog({ experience }: { experience: Job[] }) {
             <p className="work-badge__kicker">Operator badge</p>
             <p className="work-badge__org">{job.org}</p>
             <h3>{job.title}</h3>
-            <p>
+            <p className="work-badge__meta">
               {job.where} · {job.when}
             </p>
           </header>
