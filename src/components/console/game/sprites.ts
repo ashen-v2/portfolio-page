@@ -16,6 +16,7 @@ export type FieldView = {
   frame: number;
   bosses: FieldBoss[];
   goal: { x: number; y: number } | null;
+  chest: { x: number; y: number; open: boolean } | null;
 };
 
 export type BattleView = {
@@ -230,9 +231,8 @@ function drawMarker(ctx: CanvasRenderingContext2D, x: number, y: number, frame: 
   ctx.fillRect(x + 11, y + 11, 3, 3);
 }
 
-export function drawChest(ctx: CanvasRenderingContext2D, open: boolean) {
-  const size = 32;
-  blit(ctx, "/console/quest/items/chest.png", open ? 16 : 0, 0, 16, 16, (VIEW_W - size) / 2, 24, 2);
+export function drawChest(ctx: CanvasRenderingContext2D, x: number, y: number, open: boolean) {
+  blit(ctx, "/console/quest/items/chest.png", open ? 16 : 0, 0, 16, 16, x, y, 1);
 }
 
 export function drawIntro(ctx: CanvasRenderingContext2D, frame: number) {
@@ -318,6 +318,16 @@ export function drawField(ctx: CanvasRenderingContext2D, view: FieldView) {
     stamps.push({
       y: boss.y,
       draw: () => drawBoss(ctx, px, py, boss.id, false, false),
+    });
+  }
+
+  if (view.chest) {
+    const px = (view.chest.x - cam.x) * TILE;
+    const py = (view.chest.y - cam.y) * TILE;
+    const open = view.chest.open;
+    stamps.push({
+      y: view.chest.y,
+      draw: () => drawChest(ctx, px, py, open),
     });
   }
 

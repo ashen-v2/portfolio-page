@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import type { PointerEvent as ReactPointerEvent } from "react";
 import type { SiteContent } from "../../../data/content";
-import { landmarkAt, landmarks, START, TILE, VIEW_H, VIEW_W, bossSpots, camera, terrainWalkable } from "./map";
+import { landmarkAt, landmarks, START, CHEST, TILE, VIEW_H, VIEW_W, bossSpots, camera, terrainWalkable } from "./map";
 import { sectionScene, type SectionId } from "../modules";
 import { route, type Point } from "./path";
-import { drawBattle, drawChest, drawField, drawIntro, drawSelect, type AttackAnim } from "./sprites";
+import { drawBattle, drawField, drawIntro, drawSelect, type AttackAnim } from "./sprites";
 import { visitPages } from "./visit";
 import { QuestArticle } from "../../QuestArticle";
 import { openVaultLink, vaultSecrets } from "../vaultSecrets";
@@ -28,9 +28,9 @@ const HERO_ATK = 10;
 const BOSS_HP = 18;
 const BOSS_ATK = 4;
 
-type Mode = "intro" | "select" | "field" | "battle" | "story" | "visit" | "chest";
+type Mode = "intro" | "select" | "field" | "battle" | "story" | "visit";
 type Reward = "none" | "pending" | "done";
-type Arrival = { kind: "boss"; id: BossId } | { kind: "place"; id: SectionId };
+type Arrival = { kind: "boss"; id: BossId } | { kind: "place"; id: SectionId } | { kind: "chest" };
 type Phase = "menu" | "busy";
 
 type SaveData = {
@@ -55,6 +55,7 @@ type World = {
   goal: Point | null;
   pendingBoss: BossId | null;
   pendingPlace: SectionId | null;
+  pendingChest: boolean;
   visitSection: SectionId | null;
   visitPage: number;
   visitArticle: string;
@@ -142,7 +143,7 @@ function freshWorld(): World {
   if (saved) {
     const spot = openSpot(saved.x, saved.y, saved.defeated);
     return {
-      mode: saved.reward === "pending" ? "chest" : "field",
+      mode: "field",
       pages: [],
       page: 0,
       hero: saved.hero,
@@ -154,6 +155,7 @@ function freshWorld(): World {
       goal: null,
       pendingBoss: null,
       pendingPlace: null,
+      pendingChest: false,
       visitSection: null,
       visitPage: 0,
       visitArticle: "",
@@ -184,6 +186,7 @@ function freshWorld(): World {
     goal: null,
     pendingBoss: null,
     pendingPlace: null,
+    pendingChest: false,
     visitSection: null,
     visitPage: 0,
     visitArticle: "",
@@ -290,14 +293,20 @@ function advanceWalk(world: World, dt: number, reduce: boolean): Arrival | null 
     world.x = next.x;
     world.y = next.y;
     world.bob = !world.bob;
-    if (!world.path.length && (world.pendingBoss || world.pendingPlace)) {
+    if (!world.path.length && (world.pendingBoss || world.pendingPlace || world.pendingChest)) {
       world.goal = null;
       saveWorld(world);
       if (world.pendingBoss) {
         const id = world.pendingBoss;
         world.pendingBoss = null;
         world.pendingPlace = null;
+        world.pendingChest = false;
         return { kind: "boss", id };
+      }
+      if (world.pendingChest) {
+        world.pendingChest = false;
+        world.pendingPlace = null;
+        return { kind: "chest" };
       }
       const id = world.pendingPlace;
       world.pendingPlace = null;
@@ -336,8 +345,9 @@ function paint(ctx: CanvasRenderingContext2D, world: World, now: number) {
     frame,
     bosses: bossSpots.filter((boss) => !world.defeated.includes(boss.id)),
     goal: world.path.length ? world.goal : null,
+    chest:
+      world.defeated.length >= bosses.length ? { x: CHEST.x, y: CHEST.y, open: world.chestOpen } : null,
   });
-  if (world.mode === "chest") drawChest(ctx, world.chestOpen);
 }
 
 export function Quest({ content }: { content: SiteContent | null }) {
@@ -466,6 +476,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
 
   arriveRef.current = (arrival) => {
     if (arrival.kind === "boss") startBattle(arrival.id);
+    else if (arrival.kind === "chest") openChest();
     else openPlace(arrival.id);
   };
 
@@ -483,12 +494,6 @@ export function Quest({ content }: { content: SiteContent | null }) {
       publish();
       return;
     }
-    if (current.reward === "pending") {
-      current.mode = "chest";
-      current.chestOpen = false;
-      publish();
-      return;
-    }
     current.mode = "field";
     current.heroHp = HERO_HP;
     saveWorld(current);
@@ -497,19 +502,18 @@ export function Quest({ content }: { content: SiteContent | null }) {
 
   function openChest() {
     const current = world.current;
-    if (!current || current.mode !== "chest" || current.chestOpen) return;
+    if (!current || current.chestOpen || current.defeated.length < bosses.length) return;
     current.chestOpen = true;
+    current.pendingChest = false;
+    current.goal = null;
     publish();
   }
 
   function closeChest() {
     const current = world.current;
-    if (!current || current.mode !== "chest") return;
-    current.reward = "done";
+    if (!current) return;
     current.chestOpen = false;
-    current.mode = "field";
     setChestCat(false);
-    saveWorld(current);
     publish();
   }
 
@@ -647,17 +651,32 @@ export function Quest({ content }: { content: SiteContent | null }) {
       continueText();
       return;
     }
-    if (current.mode === "chest") {
-      if (!current.chestOpen) {
-        current.chestOpen = true;
-        publish();
-      }
-      return;
-    }
     if (current.mode !== "field") return;
     const point = viewPoint(event);
     if (!point) return;
     const cam = camera(current.x, current.y);
+    const chestReady = current.defeated.length >= bosses.length;
+    const chestLeft = (CHEST.x - cam.x) * TILE - 6;
+    const chestTop = (CHEST.y - cam.y) * TILE - 6;
+    const onChest =
+      chestReady && point.x >= chestLeft && point.x < chestLeft + TILE + 12 && point.y >= chestTop && point.y < chestTop + TILE + 12;
+    if (onChest) {
+      current.pendingChest = true;
+      current.pendingBoss = null;
+      current.pendingPlace = null;
+      current.goal = { x: CHEST.x, y: CHEST.y };
+      current.path = route((x, y) => canWalk(current, x, y), { x: current.x, y: current.y }, current.goal);
+      current.stepAcc = 0;
+      setShowHint(false);
+      if (!current.path.length) openChest();
+      return;
+    }
+    current.pendingChest = false;
+    if (current.chestOpen) {
+      current.chestOpen = false;
+      setChestCat(false);
+      publish();
+    }
     const boss = livingBossAt(current, cam.x, cam.y, point.x, point.y);
     const place = boss ? null : landmarkTileAt(cam.x, cam.y, point.x, point.y);
     const tx = boss ? boss.x : place ? place.x : cam.x + Math.floor(point.x / TILE);
@@ -757,12 +776,11 @@ export function Quest({ content }: { content: SiteContent | null }) {
       ? "Overworld. Tap a spot to walk there. Tap a boss to fight. Tap a marked place to open a record."
       : ui.mode === "battle"
         ? "Battle."
-        : ui.mode === "visit"
-          ? "Record scene."
-          : ui.mode === "chest"
-            ? "Treasure chest."
+          : ui.mode === "visit"
+            ? "Record scene."
             : "Quest scene.";
-  const playing = ui.mode === "field" || ui.mode === "battle" || ui.mode === "story" || ui.mode === "chest";
+  const playing = ui.mode === "field" || ui.mode === "battle" || ui.mode === "story";
+  const showBanner = ui.mode === "intro" || ui.mode === "select" || (ui.mode === "field" && showHint);
   const recordPages = ui.visitSection ? visitPages(content, ui.visitSection) : [];
   const record = recordPages[ui.visitPage] ?? recordPages[0];
 
@@ -786,50 +804,48 @@ export function Quest({ content }: { content: SiteContent | null }) {
           </button>
         ) : null}
       </div>
-      {ui.mode === "field" && showHint ? <p className="rpg-hint">Tap the ground to walk. Marked places open records.</p> : null}
+      {showBanner ? (
+        <p className="rpg-banner">Defeat all 4 bosses to open the treasure chest.</p>
+      ) : null}
+      {ui.mode === "field" && showHint ? (
+        <p className="rpg-hint">Tap the ground to walk. Marked places open records.</p>
+      ) : null}
       {ui.mode === "intro" || ui.mode === "story" ? (
         <button type="button" className="rpg-box" onClick={continueText}>
           {page}
           <i>Tap</i>
         </button>
       ) : null}
-      {ui.mode === "chest" ? (
+      {ui.chestOpen ? (
         <div className="rpg-loot">
-          {ui.chestOpen ? (
-            chestCat ? (
-              <>
-                <button type="button" onClick={() => setChestCat(false)}>
-                  Back
-                </button>
-                <img src={vaultSecrets.find((item) => item.id === "cat")?.image} alt="my_cat" />
-                <button type="button" onClick={closeChest}>
-                  Close
-                </button>
-              </>
-            ) : (
-              <>
-                {vaultSecrets.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => {
-                      if (item.image) setChestCat(true);
-                      else if (item.href) openVaultLink(item.href);
-                    }}
-                  >
-                    {item.label}
-                  </button>
-                ))}
-                <button type="button" onClick={closeChest}>
-                  Close
-                </button>
-              </>
-            )
+          {chestCat ? (
+            <>
+              <button type="button" onClick={() => setChestCat(false)}>
+                Back
+              </button>
+              <img src={vaultSecrets.find((item) => item.id === "cat")?.image} alt="my_cat" />
+              <button type="button" onClick={closeChest}>
+                Close
+              </button>
+            </>
           ) : (
-            <button type="button" className="rpg-box" onClick={openChest}>
-              The chest waits.
-              <i>Tap</i>
-            </button>
+            <>
+              {vaultSecrets.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => {
+                    if (item.image) setChestCat(true);
+                    else if (item.href) openVaultLink(item.href);
+                  }}
+                >
+                  {item.label}
+                </button>
+              ))}
+              <button type="button" onClick={closeChest}>
+                Close
+              </button>
+            </>
           )}
         </div>
       ) : null}

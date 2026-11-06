@@ -73,14 +73,15 @@ export const bosses: BossDef[] = [
 export const opening = [
   "Year 1987 of the deploy calendar. The Pipeline Kingdom has gone dark.",
   "Four keeps have fallen to outages. One operator can still walk the green.",
-  "Pick your class. Tap the land. Quiet the four bosses.",
+  "Pick your class. Tap the land. Defeat all four bosses.",
+  "Quiet the four keeps and a treasure chest will open.",
   "The guide, the houses, the shrine, and the grove open the kingdom's records.",
 ];
 
 export const ending = [
   "The four keeps are quiet. The Pipeline Kingdom is saved.",
   "The outages fade. Packets cross the bridge again.",
-  "A chest waits where the last boss fell.",
+  "A chest now stands between the project house and the workshop.",
 ];
 
 const heroIds = new Set<string>(heroes.map((hero) => hero.id));
