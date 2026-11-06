@@ -358,6 +358,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
   const [ui, setUi] = useState<Ui>(() => snapshot(game));
   const [showHint, setShowHint] = useState(() => game.mode === "intro" || game.mode === "select");
   const [chestCat, setChestCat] = useState(false);
+  const [visitAll, setVisitAll] = useState(false);
   const timers = useRef<number[]>([]);
   const reduceRef = useRef(
     typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches,
@@ -434,6 +435,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
     current.visitPage = 0;
     current.visitArticle = "";
     current.mode = "visit";
+    setVisitAll(false);
     saveWorld(current);
     publish();
   }
@@ -445,6 +447,7 @@ export function Quest({ content }: { content: SiteContent | null }) {
     current.visitSection = null;
     current.visitPage = 0;
     current.visitArticle = "";
+    setVisitAll(false);
     publish();
   }
 
@@ -794,16 +797,18 @@ export function Quest({ content }: { content: SiteContent | null }) {
         aria-label={canvasLabel}
         onPointerDown={onPointerDown}
       />
-      <div className="rpg-tools">
-        <button type="button" className="rpg-reset" onClick={toggleMute} aria-pressed={muted}>
-          {muted ? "Sound" : "Mute"}
-        </button>
-        {playing ? (
-          <button type="button" className="rpg-reset" onClick={reset}>
-            Reset
+      {ui.mode !== "visit" ? (
+        <div className="rpg-tools">
+          <button type="button" className="rpg-reset" onClick={toggleMute} aria-pressed={muted}>
+            {muted ? "Sound" : "Mute"}
           </button>
-        ) : null}
-      </div>
+          {playing ? (
+            <button type="button" className="rpg-reset" onClick={reset}>
+              Reset
+            </button>
+          ) : null}
+        </div>
+      ) : null}
       {showBanner ? (
         <p className="rpg-banner">Defeat all 4 bosses to open the treasure chest.</p>
       ) : null}
@@ -888,24 +893,46 @@ export function Quest({ content }: { content: SiteContent | null }) {
           className="rpg-visit"
           style={{ backgroundImage: `url("${sectionScene[ui.visitSection]}")` }}
         >
-          <button type="button" className="rpg-close" onClick={closeVisit}>
-            Close
-          </button>
+          <div className="rpg-visit-actions">
+            {ui.visitArticle ? null : (
+              <button type="button" className="rpg-view-all" onClick={() => setVisitAll((open) => !open)}>
+                {visitAll ? "One by one" : "View all"}
+              </button>
+            )}
+            <button type="button" className="rpg-leave" onClick={closeVisit}>
+              Close
+            </button>
+          </div>
           {ui.visitArticle ? (
             <div className="rpg-scroll">
               <QuestArticle file={ui.visitArticle} onBack={closeArticle} />
             </div>
+          ) : visitAll ? (
+            <div className="rpg-all-list">
+              {recordPages.map((item, index) => (
+                <div className={`rpg-box rpg-all${item.article ? " has-more" : ""}`} key={`${item.text}-${index}`}>
+                  {item.text}
+                  {item.article ? (
+                    <button type="button" className="rpg-more" onClick={() => openArticle(item.article ?? "")}>
+                      More
+                    </button>
+                  ) : null}
+                </div>
+              ))}
+            </div>
           ) : (
             <div className="rpg-dialogue">
-              {record?.article ? (
-                <button type="button" className="rpg-read" onClick={() => openArticle(record.article ?? "")}>
-                  Read
+              <div className="rpg-sheet">
+                <button type="button" className={`rpg-box${record?.article ? " has-more" : ""}`} onClick={advanceVisit}>
+                  {record?.text}
+                  <i>Tap</i>
                 </button>
-              ) : null}
-              <button type="button" className="rpg-box" onClick={advanceVisit}>
-                {record?.text}
-                <i>Tap</i>
-              </button>
+                {record?.article ? (
+                  <button type="button" className="rpg-more" onClick={() => openArticle(record.article ?? "")}>
+                    More
+                  </button>
+                ) : null}
+              </div>
             </div>
           )}
         </div>

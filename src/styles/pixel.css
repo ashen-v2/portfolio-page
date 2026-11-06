@@ -2934,9 +2934,97 @@ a {
   z-index: 4;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: stretch;
   gap: 6px;
   max-height: 70%;
+  overflow: auto;
+}
+
+.rpg-visit-actions {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  z-index: 5;
+  display: flex;
+  gap: 6px;
+}
+
+.rpg-view-all,
+.rpg-leave {
+  min-height: 36px;
+  padding: 4px 10px;
+  border: 3px solid #1a2140;
+  font-family: var(--font-display);
+  font-size: 14px;
+  color: #1a2140;
+  cursor: pointer;
+}
+
+.rpg-view-all {
+  background: #7ad0ff;
+}
+
+.rpg-leave {
+  background: #ffe14a;
+}
+
+.rpg-all-list {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 52px;
+  bottom: 6px;
+  z-index: 4;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow: auto;
+}
+
+.rpg-all-list .rpg-box {
+  position: relative;
+  left: auto;
+  right: auto;
+  bottom: auto;
+  flex: 0 0 auto;
+  width: auto;
+  height: auto;
+  min-height: min-content;
+  overflow: visible;
+  cursor: default;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.rpg-all-list .rpg-read {
+  display: block;
+  margin-top: 8px;
+  background: #7ad0ff;
+}
+
+.rpg-sheet {
+  position: relative;
+  width: 100%;
+}
+
+.rpg-more {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 2;
+  min-height: 0;
+  padding: 2px 8px;
+  border: 3px solid #1a2140;
+  background: #7ad0ff;
+  font-family: var(--font-display);
+  font-size: 12px;
+  line-height: 1.2;
+  color: #1a2140;
+  cursor: pointer;
+}
+
+.rpg-box.has-more {
+  padding-right: 72px;
 }
 
 .rpg-dialogue .rpg-box {
@@ -2945,9 +3033,11 @@ a {
   right: auto;
   bottom: auto;
   width: 100%;
-  max-height: 100%;
-  overflow: auto;
+  height: auto;
+  max-height: none;
+  overflow: visible;
   white-space: pre-wrap;
+  overflow-wrap: break-word;
 }
 
 .rpg-read {
