@@ -3418,48 +3418,8 @@ a {
 .route-card {
   margin: 0 0 8px;
   padding: 6px 10px 8px;
-  background: rgba(226, 242, 208, 0.8);
+  background: rgba(255, 244, 196, 0.86);
 }
-
-.route-tone-gold .route-node { background: #ffe14a; }
-.route-tone-gold .route-card { background: rgba(255, 244, 196, 0.86); }
-.route-tone-gold .route-card h3,
-.route-tone-gold .route-card .when { color: #8a5a08; }
-
-.route-tone-cyan .route-node { background: #7ad0ff; }
-.route-tone-cyan .route-card { background: rgba(210, 232, 255, 0.86); }
-.route-tone-cyan .route-card h3,
-.route-tone-cyan .route-card .when { color: #163a9a; }
-
-.route-tone-mint .route-node { background: #8ef0a0; }
-.route-tone-mint .route-card { background: rgba(210, 244, 214, 0.86); }
-.route-tone-mint .route-card h3,
-.route-tone-mint .route-card .when { color: #147a2c; }
-
-.route-tone-red .route-node { background: #e23b4a; }
-.route-tone-red .route-card { background: rgba(255, 220, 216, 0.86); }
-.route-tone-red .route-card h3,
-.route-tone-red .route-card .when { color: #9a1824; }
-
-.route-tone-purple .route-node { background: #c026ff; }
-.route-tone-purple .route-card { background: rgba(236, 214, 255, 0.86); }
-.route-tone-purple .route-card h3,
-.route-tone-purple .route-card .when { color: #6a12a8; }
-
-.route-tone-teal .route-node { background: #5ee0c0; }
-.route-tone-teal .route-card { background: rgba(196, 240, 228, 0.86); }
-.route-tone-teal .route-card h3,
-.route-tone-teal .route-card .when { color: #0b6b5c; }
-
-.route-tone-coral .route-node { background: #e07a6a; }
-.route-tone-coral .route-card { background: rgba(255, 220, 208, 0.86); }
-.route-tone-coral .route-card h3,
-.route-tone-coral .route-card .when { color: #a84438; }
-
-.route-tone-violet .route-node { background: #8a6ad4; }
-.route-tone-violet .route-card { background: rgba(226, 216, 250, 0.86); }
-.route-tone-violet .route-card h3,
-.route-tone-violet .route-card .when { color: #4c2a9a; }
 
 .route-flag {
   display: inline-block;
@@ -3472,7 +3432,7 @@ a {
 
 .route-card h3 {
   font-size: 15px;
-  color: #163a20;
+  color: #8a5a08;
 }
 
 .route-star {
@@ -3487,7 +3447,7 @@ a {
 }
 
 .route-card .when {
-  color: #2a6a28;
+  color: #8a5a08;
 }
 
 .medal-case {
@@ -3805,62 +3765,6 @@ a {
   border-bottom: 3px solid #1a2140;
 }
 
-.duty-slip-gold {
-  background: rgba(255, 244, 196, 0.88);
-}
-.duty-slip-gold .work-badge {
-  background: repeating-linear-gradient(90deg, #c99216 0 8px, #8a5a08 8px 16px);
-}
-
-.duty-slip-cyan {
-  background: rgba(210, 232, 255, 0.88);
-}
-.duty-slip-cyan .work-badge {
-  background: repeating-linear-gradient(90deg, #3d9be0 0 8px, #1d4fa8 8px 16px);
-}
-
-.duty-slip-mint {
-  background: rgba(210, 244, 214, 0.88);
-}
-.duty-slip-mint .work-badge {
-  background: repeating-linear-gradient(90deg, #3aa87a 0 8px, #147a2c 8px 16px);
-}
-
-.duty-slip-red {
-  background: rgba(255, 220, 216, 0.88);
-}
-.duty-slip-red .work-badge {
-  background: repeating-linear-gradient(90deg, #e23b4a 0 8px, #9a1824 8px 16px);
-}
-
-.duty-slip-purple {
-  background: rgba(236, 214, 255, 0.88);
-}
-.duty-slip-purple .work-badge {
-  background: repeating-linear-gradient(90deg, #c026ff 0 8px, #7a12c9 8px 16px);
-}
-
-.duty-slip-teal {
-  background: rgba(196, 240, 228, 0.88);
-}
-.duty-slip-teal .work-badge {
-  background: repeating-linear-gradient(90deg, #2aa090 0 8px, #0b6b5c 8px 16px);
-}
-
-.duty-slip-coral {
-  background: rgba(255, 220, 208, 0.88);
-}
-.duty-slip-coral .work-badge {
-  background: repeating-linear-gradient(90deg, #e07a6a 0 8px, #a84438 8px 16px);
-}
-
-.duty-slip-violet {
-  background: rgba(226, 216, 250, 0.88);
-}
-.duty-slip-violet .work-badge {
-  background: repeating-linear-gradient(90deg, #8a6ad4 0 8px, #4c2a9a 8px 16px);
-}
-
 .work-badge__kicker {
   color: #ffe14a;
 }
@@ -3927,6 +3831,14 @@ a {
 
 .desk[data-layout="stack"] .trainer-card {
   background: rgba(255, 248, 236, 0.92);
+}
+
+.desk[data-layout="stack"] .route-card {
+  background: rgba(255, 244, 196, 0.94);
+}
+
+.desk[data-layout="stack"] .duty-slip {
+  background: rgba(232, 240, 252, 0.94);
 }
 
 .desk[data-layout="stack"] .medal-case {

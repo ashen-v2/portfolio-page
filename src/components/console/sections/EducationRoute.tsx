@@ -1,5 +1,3 @@
-import { assignHudTones } from "../hudTone";
-
 type EducationItem = {
   title: string;
   note: string;
@@ -8,13 +6,11 @@ type EducationItem = {
 };
 
 export function EducationRoute({ education }: { education: EducationItem[] }) {
-  const tones = assignHudTones(education.map((item) => `${item.title}\0${item.org}`));
-
   return (
     <div className="hud-section hud-edu">
       <ol className="route-list">
         {education.map((item, index) => (
-          <li className={`route-stop route-tone-${tones[index] ?? "gold"}`} key={item.title}>
+          <li className="route-stop" key={item.title}>
             <div className="route-rail" aria-hidden="true">
               <span className="route-node" />
             </div>
