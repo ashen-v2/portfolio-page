@@ -31,7 +31,8 @@ export function SectionPanel({
   onOpenArticle,
   onCloseArticle,
 }: SectionPanelProps) {
-  const { profile, education, certifications, skillGroups, quests, experience, saveData } = content;
+  const { profile, education, certifications, certDefaultImage, skillGroups, quests, experience, saveData } =
+    content;
   const orderedQuests = useMemo(() => byPriority(quests), [quests]);
 
   if (section === "projects" && articleId) {
@@ -60,7 +61,7 @@ export function SectionPanel({
   }
 
   if (section === "certs") {
-    return <CertCabinet certifications={certifications} />;
+    return <CertCabinet certifications={certifications} defaultImage={certDefaultImage} />;
   }
 
   if (section === "projects") {

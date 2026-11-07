@@ -1,10 +1,6 @@
+import { useState } from "react";
 import { assignHudTones, certKeywordTone, type HudTone } from "../hudTone";
-
-type Cert = {
-  title: string;
-  issuer: string;
-  when: string;
-};
+import { certAssetUrl, isCertPdf, type Certification } from "../../../data/content";
 
 const palettes: Record<HudTone, { ribbon: string; medal: string; shine: string; core: string; tag: string }> = {
   gold: { ribbon: "#e23b4a", medal: "#ffe14a", shine: "#fff6b0", core: "#c99216", tag: "#3d66e6" },
@@ -44,33 +40,84 @@ function MedalIcon({ tone }: { tone: HudTone }) {
   );
 }
 
-export function CertCabinet({ certifications }: { certifications: Cert[] }) {
+type CertCabinetProps = {
+  certifications: Certification[];
+  defaultImage: string;
+};
+
+export function CertCabinet({ certifications, defaultImage }: CertCabinetProps) {
+  const [picked, setPicked] = useState(0);
+  const [broken, setBroken] = useState<Record<string, true>>({});
   const tones = assignHudTones(
     certifications.map((cert) => `${cert.title}\0${cert.issuer}`),
     certifications.map((cert) => certKeywordTone(cert.title, cert.issuer)),
   );
+  const selected = certifications.length ? Math.min(picked, certifications.length - 1) : 0;
+  const cert = certifications[selected];
+  const fallbackSrc = certAssetUrl(defaultImage);
+  const namedSrc = cert?.file ? certAssetUrl(cert.file) : "";
+  const src = namedSrc && !broken[namedSrc] ? namedSrc : fallbackSrc;
+  const showPdf = Boolean(cert?.file && isCertPdf(cert.file) && src === namedSrc);
 
   return (
     <div className="hud-section hud-certs">
       <div className="medal-case">
-        <p className="medal-case__kicker">Hall of badges</p>
-        <ul className="medal-roster">
-          {certifications.map((cert, index) => {
-            const tone = tones[index] ?? "gold";
-            return (
-              <li className="medal-row" key={cert.title} style={{ borderLeftColor: edge[tone] }}>
-                <MedalIcon tone={tone} />
-                <div>
-                  <h3>{cert.title}</h3>
-                  <p>
-                    {cert.issuer}
-                    <span className="medal-row__when">{cert.when}</span>
-                  </p>
-                </div>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="medal-case__list">
+          <p className="medal-case__kicker">Hall of badges</p>
+          <ul className="medal-roster">
+            {certifications.map((item, index) => {
+              const tone = tones[index] ?? "gold";
+              return (
+                <li key={item.title}>
+                  <button
+                    type="button"
+                    className="medal-row"
+                    style={{ borderLeftColor: edge[tone] }}
+                    aria-pressed={index === selected}
+                    onClick={() => setPicked(index)}
+                  >
+                    <MedalIcon tone={tone} />
+                    <div>
+                      <h3>{item.title}</h3>
+                      <p>
+                        {item.issuer}
+                        <span className="medal-row__when">{item.when}</span>
+                      </p>
+                    </div>
+                  </button>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+        {cert ? (
+          <div className="medal-preview">
+            <p className="medal-case__kicker">Certificate scan</p>
+            <div className="medal-preview__stage">
+              {showPdf ? (
+                <object
+                  className="medal-preview__fit medal-preview__pdf"
+                  data={src}
+                  type="application/pdf"
+                  title={cert.title}
+                >
+                  <img className="medal-preview__fit" src={fallbackSrc} alt="" />
+                </object>
+              ) : (
+                <img
+                  className="medal-preview__fit"
+                  src={src}
+                  alt={`${cert.title} certificate`}
+                  onError={() => {
+                    if (namedSrc && src === namedSrc) {
+                      setBroken((current) => ({ ...current, [namedSrc]: true }));
+                    }
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        ) : null}
       </div>
     </div>
   );

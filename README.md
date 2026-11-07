@@ -84,11 +84,13 @@ Edit [public/content.json](public/content.json) and refresh. That file is the pr
 
 A badge is `{ "label": "AWS CCP", "tone": "gold" }`. Tones are `gold`, `cyan`, and `mint`.
 
-A certificate is one object:
+`certDefaultImage` is the filename in [public/certs/](public/certs/) shown when a certificate has no scan yet. Drop PNG, JPG, WEBP, or PDF files into that folder, then add a `file` field with only the filename:
 
 ```json
-{ "title": "New cert", "issuer": "Amazon Web Services", "when": "Oct 2026" }
+{ "title": "New cert", "issuer": "Amazon Web Services", "when": "Oct 2026", "file": "aws-ccp.png" }
 ```
+
+Images of any size sit in the right-hand preview with `object-fit: contain`, so landscape and portrait scans letterbox instead of cropping. PNG or JPG is the better in-console preview; PDF still embeds if that is the only copy you have. Leave `file` off (or point it at a missing name) and the default image is used.
 
 Project bullets are an array of strings. Set `article` to a markdown file name in `public/articles/` when the project has a long write-up. Leave it off when the card is enough.
 
@@ -103,5 +105,6 @@ Commit the JSON (and any new article or PDF) so the host rebuilds. On S3, upload
 - [src/data/content.ts](src/data/content.ts) — the shape of `content.json`
 - [public/content.json](public/content.json) — the words on the site
 - [public/articles/](public/articles/) — project write-ups
+- [public/certs/](public/certs/) — certificate scans (filename only in `content.json`)
 - [public/console/](public/console/) — scenes, portrait, and Quest art
 - [docs/screenshots/](docs/screenshots/) — the pictures in this README (they are not part of `dist/`)

@@ -3438,12 +3438,38 @@ a {
   font-size: 12px;
 }
 
+.panel:has(.hud-certs) {
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.hud-certs {
+  flex: 1;
+  min-height: 0;
+  height: 100%;
+}
+
 .medal-case {
+  display: grid;
+  grid-template-columns: minmax(200px, 0.92fr) minmax(0, 1.18fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 10px;
+  height: 100%;
+  min-height: 0;
   padding: 10px;
   background: rgba(36, 28, 18, 0.78);
   box-shadow:
     inset 0 0 0 3px #c9a24a,
     4px 4px 0 rgba(12, 28, 88, 0.38);
+}
+
+.medal-case__list,
+.medal-preview {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
 }
 
 .medal-case__kicker {
@@ -3454,25 +3480,98 @@ a {
 
 .medal-roster {
   display: grid;
+  align-content: start;
   gap: 8px;
+  flex: 1;
+  min-height: 0;
   margin: 0;
   padding: 0;
+  overflow: auto;
   list-style: none;
+  scrollbar-width: thin;
+  scrollbar-color: #c9a24a transparent;
 }
 
 .medal-row {
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 10px 14px;
+  width: 100%;
+  padding: 8px 10px;
+  appearance: none;
   background: rgba(255, 248, 236, 0.96);
   border: 2px solid #1a2140;
   border-left-width: 8px;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.medal-row:hover {
+  background: #fffdf4;
+}
+
+.medal-row[aria-pressed="true"] {
+  background: #fff6c8;
+  box-shadow: inset 0 0 0 2px #ffe14a;
+}
+
+.medal-row:focus-visible {
+  outline: 3px solid #ffe14a;
+  outline-offset: 2px;
+}
+
+.medal-preview {
+  padding: 8px;
+  background: rgba(12, 18, 40, 0.55);
+  border: 3px solid #1a2140;
+  box-shadow: inset 0 0 0 2px #c9a24a;
+}
+
+.medal-preview__stage {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      rgba(26, 33, 64, 0.35) 0 8px,
+      rgba(12, 18, 40, 0.35) 8px 16px
+    );
+}
+
+.medal-preview__fit {
+  position: absolute;
+  inset: 8px;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  margin: 0;
+  object-fit: contain;
+  object-position: center;
+  background: transparent;
+}
+
+.medal-preview__fit[src$=".svg"] {
+  image-rendering: pixelated;
+}
+
+.medal-preview__pdf {
+  background: #fff8ec;
+}
+
+.desk[data-layout="stack"] .medal-case {
+  grid-template-columns: 1fr;
+  grid-template-rows: minmax(150px, 0.42fr) minmax(0, 1fr);
+}
+
+.desk[data-layout="stack"] .medal-preview {
+  order: -1;
 }
 
 .medal-icon {
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   flex: none;
   image-rendering: pixelated;
 }
@@ -3480,7 +3579,7 @@ a {
 .medal-row h3 {
   margin: 0;
   font-family: var(--font-body);
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 800;
   line-height: 1.25;
   color: #1a2140;
