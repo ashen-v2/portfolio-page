@@ -1,11 +1,14 @@
 import { useState } from "react";
+import { certAssetUrl, isCertPdf, type Certification } from "../../data/content";
 import { PixelIcon } from "./pixelIcons";
-import { moduleKeys, sectionScene, type SectionId, type ToolId } from "./modules";
+import { homePortrait, moduleKeys, sectionPortrait, sectionScene, type SectionId, type ToolId } from "./modules";
 import { serviceLabel, type ServiceApp, type ServiceState } from "./services";
 
 const base = import.meta.env.BASE_URL;
 
-const pictures = [
+type FilePic = { id: string; label: string; src: string; pdf?: boolean };
+
+const pictures: FilePic[] = [
   { id: "about", label: "about", src: sectionScene.about },
   { id: "education", label: "education", src: sectionScene.education },
   { id: "certificate", label: "certificate", src: sectionScene.certs },
@@ -13,6 +16,13 @@ const pictures = [
   { id: "projects", label: "projects", src: sectionScene.projects },
   { id: "skills", label: "skills", src: sectionScene.skills },
   { id: "work", label: "work", src: sectionScene.work },
+  { id: "portrait-home", label: "portrait-home", src: homePortrait },
+  { id: "portrait-about", label: "portrait-about", src: sectionPortrait.about },
+  { id: "portrait-education", label: "portrait-education", src: sectionPortrait.education },
+  { id: "portrait-certs", label: "portrait-certs", src: sectionPortrait.certs },
+  { id: "portrait-projects", label: "portrait-projects", src: sectionPortrait.projects },
+  { id: "portrait-skills", label: "portrait-skills", src: sectionPortrait.skills },
+  { id: "portrait-work", label: "portrait-work", src: sectionPortrait.work },
 ];
 
 const bins: { id: ServiceApp; tool: "quest" | "files" | "canvas" | "calc"; file: string }[] = [
@@ -22,17 +32,36 @@ const bins: { id: ServiceApp; tool: "quest" | "files" | "canvas" | "calc"; file:
   { id: "calc", tool: "calc", file: "calculator.bin" },
 ];
 
+type Folder = "images" | "apps" | "certs" | null;
+
 type FilesProps = {
   services: ServiceState;
+  certifications: Certification[];
+  defaultImage: string;
   onOpen: (id: SectionId) => void;
   onOpenTool: (id: ToolId) => void;
 };
 
-export function Files({ services, onOpen, onOpenTool }: FilesProps) {
+function certPictures(certifications: Certification[], defaultImage: string): FilePic[] {
+  const fallback = certAssetUrl(defaultImage);
+  return certifications.map((cert) => {
+    const file = cert.file || defaultImage;
+    const pdf = isCertPdf(file);
+    return {
+      id: cert.title,
+      label: cert.title,
+      src: cert.file ? certAssetUrl(cert.file) : fallback,
+      pdf,
+    };
+  });
+}
+
+export function Files({ services, certifications, defaultImage, onOpen, onOpenTool }: FilesProps) {
   const [denied, setDenied] = useState(false);
-  const [folder, setFolder] = useState<"images" | "apps" | null>(null);
-  const [picture, setPicture] = useState<(typeof pictures)[number] | null>(null);
+  const [folder, setFolder] = useState<Folder>(null);
+  const [picture, setPicture] = useState<FilePic | null>(null);
   const [refusal, setRefusal] = useState("");
+  const scans = certPictures(certifications, defaultImage);
 
   function launch(id: ServiceApp, tool: ToolId) {
     const state = services[id];
@@ -49,34 +78,48 @@ export function Files({ services, onOpen, onOpenTool }: FilesProps) {
     onOpenTool(tool);
   }
 
+  function openFolder(next: Folder) {
+    setPicture(null);
+    setRefusal("");
+    setFolder(next);
+  }
+
   let body = (
     <ul className="files-list">
       <li>
-        <button type="button" className="files-folder" onClick={() => setDenied(true)}>
-          <PixelIcon className="files-folder-icon" name="folderBlue" />
+        <button type="button" className="files-folder files-folder--locked" onClick={() => setDenied(true)}>
+          <PixelIcon className="files-folder-icon" name="folderLocked" />
           <span>system_files</span>
         </button>
       </li>
       <li>
-        <button type="button" className="files-folder" onClick={() => setFolder("images")}>
+        <button type="button" className="files-folder" onClick={() => openFolder("images")}>
           <PixelIcon className="files-folder-icon" name="folderBlue" />
           <span>images</span>
         </button>
       </li>
       <li>
-        <button type="button" className="files-folder" onClick={() => setFolder("apps")}>
+        <button type="button" className="files-folder" onClick={() => openFolder("certs")}>
+          <PixelIcon className="files-folder-icon" name="folderBlue" />
+          <span>certificates</span>
+        </button>
+      </li>
+      <li>
+        <button type="button" className="files-folder" onClick={() => openFolder("apps")}>
           <PixelIcon className="files-folder-icon" name="folderBlue" />
           <span>installed_apps</span>
         </button>
       </li>
-      {moduleKeys.map((item) => (
-        <li key={item.id}>
-          <button type="button" className="files-folder" onClick={() => onOpen(item.id)}>
-            <PixelIcon className="files-folder-icon" name="folder" />
-            <span>{item.label}</span>
-          </button>
-        </li>
-      ))}
+      {moduleKeys
+        .filter((item) => item.id !== "certs")
+        .map((item) => (
+          <li key={item.id}>
+            <button type="button" className="files-folder" onClick={() => onOpen(item.id)}>
+              <PixelIcon className="files-folder-icon" name="folder" />
+              <span>{item.label}</span>
+            </button>
+          </li>
+        ))}
     </ul>
   );
 
@@ -86,20 +129,27 @@ export function Files({ services, onOpen, onOpenTool }: FilesProps) {
         <button type="button" className="files-back" onClick={() => setPicture(null)}>
           Back
         </button>
-        <img src={picture.src} alt={picture.label} />
+        {picture.pdf ? (
+          <object className="files-viewer-pdf" data={picture.src} type="application/pdf" title={picture.label}>
+            <p>{picture.label}</p>
+          </object>
+        ) : (
+          <img src={picture.src} alt={picture.label} />
+        )}
       </div>
     );
-  } else if (folder === "images") {
+  } else if (folder === "images" || folder === "certs") {
+    const items = folder === "certs" ? scans : pictures;
     body = (
       <div className="files-browser">
-        <button type="button" className="files-back" onClick={() => setFolder(null)}>
+        <button type="button" className="files-back" onClick={() => openFolder(null)}>
           Back
         </button>
-        <ul className="files-photos">
-          {pictures.map((item) => (
+        <ul className={folder === "certs" ? "files-photos files-photos--certs" : "files-photos"}>
+          {items.map((item) => (
             <li key={item.id}>
               <button type="button" className="files-photo" onClick={() => setPicture(item)}>
-                <img src={item.src} alt="" />
+                <img src={item.pdf ? certAssetUrl(defaultImage) : item.src} alt="" />
                 <span>{item.label}</span>
               </button>
             </li>
@@ -110,7 +160,7 @@ export function Files({ services, onOpen, onOpenTool }: FilesProps) {
   } else if (folder === "apps") {
     body = (
       <div className="files-browser">
-        <button type="button" className="files-back" onClick={() => { setFolder(null); setRefusal(""); }}>
+        <button type="button" className="files-back" onClick={() => openFolder(null)}>
           Back
         </button>
         {refusal ? <p className="files-refusal">{refusal}</p> : null}

@@ -15,7 +15,8 @@ export type PixelIconName =
   | "quest"
   | "files"
   | "folder"
-  | "folderBlue";
+  | "folderBlue"
+  | "folderLocked";
 
 function r(x: number, y: number, w: number, h: number, fill: string) {
   return <rect key={`${x}-${y}-${w}-${h}-${fill}`} x={x} y={y} width={w} height={h} fill={fill} />;
@@ -192,6 +193,19 @@ const icons: Record<PixelIconName, ReactNode> = {
       {r(1, 5, 14, 8, "#3d66e6")}
       {r(2, 6, 12, 1, "#9fd4ff")}
       {r(1, 11, 14, 2, "#16348f")}
+    </>
+  ),
+  folderLocked: (
+    <>
+      {r(1, 3, 6, 2, "#6a7388")}
+      {r(1, 5, 14, 8, "#8a93a8")}
+      {r(2, 6, 12, 1, "#c5cbd6")}
+      {r(1, 11, 14, 2, "#4d5d82")}
+      {r(4, 6, 2, 2, "#e23b4a")}
+      {r(10, 6, 2, 2, "#e23b4a")}
+      {r(6, 8, 4, 2, "#e23b4a")}
+      {r(4, 10, 2, 2, "#e23b4a")}
+      {r(10, 10, 2, 2, "#e23b4a")}
     </>
   ),
   quest: (

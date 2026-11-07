@@ -117,7 +117,15 @@ export function Console({
       />
     );
   } else if (tool === "files") {
-    panel = <Files services={services} onOpen={onSelect} onOpenTool={onOpenTool} />;
+    panel = (
+      <Files
+        services={services}
+        certifications={content?.certifications ?? []}
+        defaultImage={content?.certDefaultImage ?? "default.svg"}
+        onOpen={onSelect}
+        onOpenTool={onOpenTool}
+      />
+    );
   } else if (tool === "notes") {
     panel = <Notes />;
   } else if (tool === "canvas") {
@@ -143,6 +151,7 @@ export function Console({
           content={content}
           section={section}
           articleId={articleId}
+          previewCerts={layout === "stage"}
           onOpenArticle={onOpenArticle}
           onCloseArticle={onCloseArticle}
         />

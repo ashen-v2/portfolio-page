@@ -13,6 +13,7 @@ type SectionPanelProps = {
   content: SiteContent;
   section: SectionId;
   articleId: string;
+  previewCerts: boolean;
   onOpenArticle: (id: string) => void;
   onCloseArticle: () => void;
 };
@@ -28,6 +29,7 @@ export function SectionPanel({
   content,
   section,
   articleId,
+  previewCerts,
   onOpenArticle,
   onCloseArticle,
 }: SectionPanelProps) {
@@ -61,7 +63,13 @@ export function SectionPanel({
   }
 
   if (section === "certs") {
-    return <CertCabinet certifications={certifications} defaultImage={certDefaultImage} />;
+    return (
+      <CertCabinet
+        certifications={certifications}
+        defaultImage={certDefaultImage}
+        preview={previewCerts}
+      />
+    );
   }
 
   if (section === "projects") {

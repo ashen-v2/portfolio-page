@@ -43,9 +43,10 @@ function MedalIcon({ tone }: { tone: HudTone }) {
 type CertCabinetProps = {
   certifications: Certification[];
   defaultImage: string;
+  preview: boolean;
 };
 
-export function CertCabinet({ certifications, defaultImage }: CertCabinetProps) {
+export function CertCabinet({ certifications, defaultImage, preview }: CertCabinetProps) {
   const [picked, setPicked] = useState(0);
   const [broken, setBroken] = useState<Record<string, true>>({});
   const tones = assignHudTones(
@@ -59,38 +60,61 @@ export function CertCabinet({ certifications, defaultImage }: CertCabinetProps) 
   const src = namedSrc && !broken[namedSrc] ? namedSrc : fallbackSrc;
   const showPdf = Boolean(cert?.file && isCertPdf(cert.file) && src === namedSrc);
 
+  const roster = (
+    <ul className="medal-roster">
+      {certifications.map((item, index) => {
+        const tone = tones[index] ?? "gold";
+        const row = (
+          <>
+            <MedalIcon tone={tone} />
+            <div>
+              <h3>{item.title}</h3>
+              <p>
+                {item.issuer}
+                <span className="medal-row__when">{item.when}</span>
+              </p>
+            </div>
+          </>
+        );
+        if (!preview) {
+          return (
+            <li className="medal-row" key={item.title} style={{ borderLeftColor: edge[tone] }}>
+              {row}
+            </li>
+          );
+        }
+        return (
+          <li key={item.title}>
+            <button
+              type="button"
+              className="medal-row"
+              style={{ borderLeftColor: edge[tone] }}
+              aria-pressed={index === selected}
+              onClick={() => setPicked(index)}
+            >
+              {row}
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
+
   return (
     <div className="hud-section hud-certs">
-      <div className="medal-case">
-        <div className="medal-case__list">
-          <p className="medal-case__kicker">Hall of badges</p>
-          <ul className="medal-roster">
-            {certifications.map((item, index) => {
-              const tone = tones[index] ?? "gold";
-              return (
-                <li key={item.title}>
-                  <button
-                    type="button"
-                    className="medal-row"
-                    style={{ borderLeftColor: edge[tone] }}
-                    aria-pressed={index === selected}
-                    onClick={() => setPicked(index)}
-                  >
-                    <MedalIcon tone={tone} />
-                    <div>
-                      <h3>{item.title}</h3>
-                      <p>
-                        {item.issuer}
-                        <span className="medal-row__when">{item.when}</span>
-                      </p>
-                    </div>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
-        </div>
-        {cert ? (
+      <div className={preview ? "medal-case medal-case--split" : "medal-case"}>
+        {preview ? (
+          <div className="medal-case__list">
+            <p className="medal-case__kicker">Hall of badges</p>
+            {roster}
+          </div>
+        ) : (
+          <>
+            <p className="medal-case__kicker">Hall of badges</p>
+            {roster}
+          </>
+        )}
+        {preview && cert ? (
           <div className="medal-preview">
             <p className="medal-case__kicker">Certificate scan</p>
             <div className="medal-preview__stage">
