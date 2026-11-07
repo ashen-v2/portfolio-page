@@ -13,6 +13,7 @@
     "cvFile": "Ashen_Viduranga_DevOps_Intern.pdf",
     "tagline": "Cloud systems, containers, and automation."
   },
+  "certDefaultImage": "default.svg",
   "badges": [
     { "label": "AWS CCP", "tone": "gold" },
     { "label": "Docker", "tone": "cyan" },
@@ -42,18 +43,20 @@
     {
       "title": "AWS Certified Cloud Practitioner",
       "issuer": "Amazon Web Services",
-      "when": "Issued Aug 2026 · Valid through Aug 2029"
+      "when": "Issued Aug 2026 · Valid through Aug 2029",
+      "file": "aws_ccp.png"
     },
-    
     {
       "title": "Terraform: The Complete Training by Pearson",
       "issuer": "Linkdin",
-      "when": "Issued Oct 2026"
+      "when": "Issued Oct 2026",
+      "file": "terraform_pearson.png"
     },
     {
       "title": "Docker Foundations Professional Certificate",
       "issuer": "Docker, Inc",
-      "when": "Issued Oct 2026"
+      "when": "Issued Oct 2026",
+      "file": "docker_foundations_professional_certificate.png"
     },
     {
       "title": "AWS re/Start",
@@ -63,7 +66,8 @@
     {
       "title": "CS50: Introduction to Computer Science",
       "issuer": "HarvardX",
-      "when": "Aug 2025"
+      "when": "Aug 2025",
+      "file": "cs-50.png"
     }
   ],
   "skillGroups": [
@@ -146,16 +150,43 @@
       "stack": ["VPC", "ALB", "ASG", "Aurora", "IAM", "Multi-AZ"]
     },
     {
-      "id": "tools",
+      "id": "diagram",
       "priority": 3,
-      "title": "Automation & API Projects",
+      "article": "diagram-exporter.md",
+      "title": "Diagram Exporter",
       "status": "TOOL",
-      "subtitle": "Python workflows and educational search",
+      "subtitle": "Transformer diagram and manufacturing-report automation",
       "points": [
-        "Diagram Exporter — Python workflow automation for manufacturing reports.",
-        "CS50 Tools — FastAPI REST API plus a keyword search engine over educational video content."
+        "Python desktop app that loads toroidal transformer designs from the factory database and draws primary/secondary windings, phase dots, and thermal switches on a canvas.",
+        "Engineers edit winding specs (color, length, gauge, tubes) with live diagram updates, then drag, add, or delete components before saving a PNG.",
+        "A decoupled Excel engine fills multi-sheet reports from the same data: design page, control plan, BOM with prices, production sheet, time sheets, and front page."
       ],
-      "stack": ["Python", "FastAPI", "REST"]
+      "stack": ["Python", "CustomTkinter", "openpyxl", "pyodbc", "Pillow"]
+    },
+    {
+      "id": "reqaists",
+      "priority": 4,
+      "article": "reqaists.md",
+      "title": "Reqaists",
+      "status": "TOOL",
+      "subtitle": "Local AI REST API tester",
+      "points": [
+        "Reads an OpenAPI spec, builds a Pydantic model for one endpoint, and asks a local Ollama model (gemma4:e4b by default) to fill happy, edge, and invalid cases.",
+        "Run mode calls the live API, seeds ids for GET/PUT/DELETE when needed, and records pass/fail. Generate-only mode saves cases to runs/{timestamp}.json without hitting the server.",
+        "Terminal (`python -m tester`) and a FastAPI web UI on port 8080. Ships a sample Customer CRUD API on SQLite for local trials."
+      ],
+      "stack": ["Python", "FastAPI", "Pydantic", "Ollama", "OpenAPI", "httpx"]
+    },
+    {
+      "id": "cs50api",
+      "priority": 5,
+      "title": "CS50 Video Transcript API",
+      "status": "TOOL",
+      "subtitle": "FastAPI over CS50 YouTube transcripts",
+      "points": [
+        "CS50P capstone REST API: paginated playlists and videos, transcripts by video id or title, SQLite plus SQLModel, pytest coverage."
+      ],
+      "stack": ["FastAPI", "SQLModel", "SQLite", "pytest"]
     }
   ],
   "experience": [
