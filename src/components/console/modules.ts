@@ -43,6 +43,22 @@ export const sectionPortrait: Record<SectionId, string> = {
 
 export const homePortrait = `${sceneBase}console/portrait.png`;
 
+export const toolPortrait: Record<ToolId, string> = {
+  files: `${sceneBase}console/portrait-files.png`,
+  terminal: `${sceneBase}console/portrait-terminal.png`,
+  notes: `${sceneBase}console/portrait-notes.png`,
+  canvas: `${sceneBase}console/portrait-canvas.png`,
+  calc: `${sceneBase}console/portrait-calc.png`,
+  quest: `${sceneBase}console/portrait-quest.png`,
+  vault: `${sceneBase}console/portrait-vault.png`,
+};
+
+export function operatorPortrait(tool: ToolId | null, scene: SectionId | null) {
+  if (tool) return toolPortrait[tool];
+  if (scene) return sectionPortrait[scene];
+  return homePortrait;
+}
+
 export function moduleTitle(section: SectionId | null) {
   if (!section) return "SELECT A MODULE";
   return moduleKeys.find((item) => item.id === section)?.title ?? "SELECT A MODULE";

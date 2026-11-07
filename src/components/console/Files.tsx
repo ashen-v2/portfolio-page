@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { certAssetUrl, isCertPdf, type Certification } from "../../data/content";
 import { PixelIcon } from "./pixelIcons";
-import { homePortrait, moduleKeys, sectionPortrait, sectionScene, type SectionId, type ToolId } from "./modules";
+import { homePortrait, moduleKeys, sectionPortrait, sectionScene, toolPortrait, type SectionId, type ToolId } from "./modules";
 import { serviceLabel, type ServiceApp, type ServiceState } from "./services";
 
 const base = import.meta.env.BASE_URL;
@@ -23,6 +23,13 @@ const pictures: FilePic[] = [
   { id: "portrait-projects", label: "portrait-projects", src: sectionPortrait.projects },
   { id: "portrait-skills", label: "portrait-skills", src: sectionPortrait.skills },
   { id: "portrait-work", label: "portrait-work", src: sectionPortrait.work },
+  { id: "portrait-files", label: "portrait-files", src: toolPortrait.files },
+  { id: "portrait-terminal", label: "portrait-terminal", src: toolPortrait.terminal },
+  { id: "portrait-notes", label: "portrait-notes", src: toolPortrait.notes },
+  { id: "portrait-canvas", label: "portrait-canvas", src: toolPortrait.canvas },
+  { id: "portrait-calc", label: "portrait-calc", src: toolPortrait.calc },
+  { id: "portrait-quest", label: "portrait-quest", src: toolPortrait.quest },
+  { id: "portrait-vault", label: "portrait-vault", src: toolPortrait.vault },
 ];
 
 const bins: { id: ServiceApp; tool: "quest" | "files" | "canvas" | "calc"; file: string }[] = [

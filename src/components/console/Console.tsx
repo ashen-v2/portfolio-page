@@ -12,7 +12,7 @@ import { Terminal } from "./Terminal";
 import { ToolDock } from "./ToolDock";
 import { Vault } from "./Vault";
 import { Viewport } from "./Viewport";
-import { homePortrait, moduleTitle, sectionPortrait, sectionScene, toolTitle, type SectionId, type ToolId } from "./modules";
+import { moduleTitle, operatorPortrait, sectionScene, toolTitle, type SectionId, type ToolId } from "./modules";
 import { freshServices, type ServiceApp, type ServiceState } from "./services";
 
 type PhoneLayout = "stage" | "stack";
@@ -184,7 +184,7 @@ export function Console({
           <SideColumn
             profile={content?.profile ?? null}
             badges={content?.badges ?? []}
-            portraitSrc={scene ? sectionPortrait[scene] : homePortrait}
+            portraitSrc={operatorPortrait(tool, scene)}
             location={content?.profile.location ?? ""}
           />
           <ToolDock
